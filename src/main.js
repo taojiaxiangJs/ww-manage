@@ -1,5 +1,6 @@
 import { createApp } from 'vue'
 import './assets/style/style.css'
+import 'uno.css'
 import Antd from 'ant-design-vue'
 import App from './App.vue'
 

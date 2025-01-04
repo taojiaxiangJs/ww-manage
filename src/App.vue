@@ -1,6 +1,7 @@
 <script setup>
 import { ref, h } from 'vue'
 import { message } from 'ant-design-vue'
+import activityComponent from './components/activity.vue'
 const [messageApi, contextHolder] = message.useMessage()
 import { DeleteOutlined, QuestionCircleOutlined } from '@ant-design/icons-vue'
 const activeKey = ref('1')
@@ -213,13 +214,13 @@ const base_foods = ref({
     <a-collapse-panel key="1" header="我的活动" style="background: #f7f7f7; border-radius: 4px; margin-bottom: 24px; border: 0; overflow: hidden">
       <a-flex justify="space-between">
         <!-- 满减 -->
-        <div class="active-box">
+        <div py-4>
           <a-flex vertical>
             <a-checkbox v-model:checked="activity.maxout_check">满减:</a-checkbox>
-            <div class="active-item" v-for="(maxout, i) in activity.maxout_list" :key="i">
-              <span>满</span>
+            <div my-2 ml-4 v-for="(maxout, i) in activity.maxout_list" :key="i">
+              <span px-2>满</span>
               <a-input-number v-model:value="maxout.reach" :min="1" :max="10" size="small" />元
-              <span>减</span>
+              <span px-2>减</span>
               <a-input-number v-model:value="maxout.reduced" :min="1" :max="10" size="small" />元
               <a-button type="text" size="small" danger @click="delMaxout('maxout', i)" v-if="i"><DeleteOutlined /></a-button>
             </div>
@@ -228,39 +229,39 @@ const base_foods = ref({
         </div>
 
         <!-- 配送费优惠 -->
-        <div class="active-box">
+        <div py-4>
           <a-flex vertical style="margin-bottom: 10px">
             <a-checkbox v-model:checked="activity.delivery_check"> 配送费 </a-checkbox>
-            <div class="active-item">配送费优惠:<a-input-number v-model:value="activity.delivery" :min="1" :max="10" size="small" />元</div>
+            <div my-2 ml-4>配送费优惠:<a-input-number v-model:value="activity.delivery" :min="1" :max="10" size="small" />元</div>
           </a-flex>
           <a-flex vertical style="margin-bottom: 10px">
             <a-checkbox v-model:checked="activity.new_customer_check"> 新用户 </a-checkbox>
-            <div class="active-item">新用户立减:<a-input-number v-model:value="activity.new_customer" :min="1" :max="10" size="small" />元</div>
+            <div my-2 ml-4>新用户立减:<a-input-number v-model:value="activity.new_customer" :min="1" :max="10" size="small" />元</div>
           </a-flex>
           <a-flex vertical style="margin-bottom: 10px">
             <a-checkbox v-model:checked="activity.collect_check"> 收藏有礼 </a-checkbox>
-            <div class="active-item">
-              <span>满</span>
+            <div my-2 ml-4>
+              <span px-2>满</span>
               <a-input-number v-model:value="activity.collect.reach" :min="1" :max="10" size="small" />元
-              <span>减</span>
+              <span px-2>减</span>
               <a-input-number v-model:value="activity.collect.reduced" :min="1" :max="10" size="small" />元
             </div>
           </a-flex>
         </div>
         <!-- 优惠券 -->
-        <div class="active-box">
+        <div py-4>
           <a-flex vertical>
             <a-checkbox v-model:checked="activity.ticket_check">
               店内领券
               <a-tooltip>
-                <template #title>可设置顾客类型（新客、老客、全部）、券的发放数量、生效日期及指定时间段、券有效期</template>
+                <template #delivery-title>可设置顾客类型（新客、老客、全部）、券的发放数量、生效日期及指定时间段、券有效期</template>
                 <QuestionCircleOutlined />
               </a-tooltip>
             </a-checkbox>
-            <div class="active-item" v-for="(maxout, i) in activity.ticket_list" :key="i">
-              <span>满</span>
+            <div my-2 ml-4 v-for="(maxout, i) in activity.ticket_list" :key="i">
+              <span px-2>满</span>
               <a-input-number v-model:value="maxout.reach" :min="1" :max="10" size="small" />元
-              <span>减</span>
+              <span px-2>减</span>
               <a-input-number v-model:value="maxout.reduced" :min="1" :max="10" size="small" />元
               <a-button type="text" size="small" danger @click="delMaxout('ticket', i)" v-if="i"><DeleteOutlined /></a-button>
             </div>
@@ -268,10 +269,10 @@ const base_foods = ref({
           </a-flex>
         </div>
         <!-- 神券红包 -->
-        <div class="active-box">
+        <div py-4>
           <a-flex vertical style="margin-bottom: 10px">
             <a-checkbox v-model:checked="activity.swell_ticket_check"> 神券红包 </a-checkbox>
-            <div class="active-item">商家承担:<a-input-number v-model:value="activity.swell_ticket" :min="1" :max="10" size="small" />元</div>
+            <div my-2 ml-4>商家承担:<a-input-number v-model:value="activity.swell_ticket" :min="1" :max="10" size="small" />元</div>
           </a-flex>
         </div>
       </a-flex>
@@ -279,52 +280,38 @@ const base_foods = ref({
   </a-collapse>
   <a-collapse v-model:activeKey="activeKey" :bordered="false" style="background: rgb(255, 255, 255)">
     <a-collapse-panel key="2" header="配送设置" style="background: #f7f7f7; border-radius: 4px; margin-bottom: 24px; border: 0; overflow: hidden">
-      <a-flex>
-        <div>
-          <div class="title">美团快送</div>
-          <div class="sub-title">1. 佣金收费规则</div>
-          <div>商品优惠后金额  佣金比例 6.4% （保底 1.38元）</div>
-          <div class="sub-title">2. 配送服务费</div>
-          <div>配送服务费=距离收费+价格收费+时段收费</div>
-          <div class="sub-title">a. 距离收费</div>
-          <div>0.0公里(含)-3.0公里(含)，收起步价2.5元<br/>3.0公里(不含)-4.0公里(含)，每0.1公里加收0.15元<br/>4.0公里(不含)以上，每0.1公里加收0.14元</div>
-          <div class="sub-title">b. 价格收费</div>
-          <div>收费基数=商品小计-商家活动支出</div>
-          <div>0元(不含)-25元(含)，收0元<br/>25元(不含)-30元(含)，每上涨1元加收0.19元<br/>30元(不含)以上，每上涨1元加收0.15元</div>
-          <div class="sub-title">c. 时段收费</div>
-          <div>00:00(不含)-02:00(含):每单加收0.8元<br/>02:00(不含)-06:00(含):每单加收1元<br/>21:00(不含)-24:00(含):每单加收0.3元</div>
+      <activityComponent></activityComponent>
+      <!-- <a-flex justify="space-between">
+        <div></div>
+        <div text-sm>
+          <div font-medium text-base text-black>美团快送</div>
+          <div text-gray-800 my-2 >1. 佣金收费规则</div>
+          <div text-gray-500 pl-4 >商品优惠后金额  佣金比例 6.4% （保底 1.38元）</div>
+          <div text-gray-800 my-2 >2. 配送服务费</div>
+          <div text-gray-500 pl-4 >配送服务费=距离收费+价格收费+时段收费</div>
+          <div text-gray-800 pl-4 my-2 >a. 距离收费</div>
+          <div text-gray-500 pl-8 >0.0公里(含)-3.0公里(含)，收起步价2.5元<br/>3.0公里(不含)-4.0公里(含)，每0.1公里加收0.15元<br/>4.0公里(不含)以上，每0.1公里加收0.14元</div>
+          <div text-gray-800 pl-4 my-2 >b. 价格收费</div>
+          <div text-gray-500 pl-8 >收费基数=商品小计-商家活动支出</div>
+          <div text-gray-500 pl-8 >0元(不含)-25元(含)，收0元<br/>25元(不含)-30元(含)，每上涨1元加收0.19元<br/>30元(不含)以上，每上涨1元加收0.15元</div>
+          <div text-gray-800 pl-4 my-2 >c. 时段收费</div>
+          <div text-gray-500 pl-8 >00:00(不含)-02:00(含):每单加收0.8元<br/>02:00(不含)-06:00(含):每单加收1元<br/>21:00(不含)-24:00(含):每单加收0.3元</div>
         </div>
-
-        <div>
-          <div class="title">饿了么-蜂鸟准时达</div>
-          <div class="sub-title">1. 佣金收费规则</div>
-          <div>商品优惠后金额  佣金比例 6.4% （保底 1.38元）</div>
-          <div class="sub-title">2. 配送服务费</div>
-          <div>配送服务费=距离收费+价格收费+时段收费</div>
-          <div class="sub-title">a. 距离收费</div>
-          <div>0.0公里(含)-3.0公里(含)，收起步价2.5元<br/>3.0公里(不含)-4.0公里(含)，每0.1公里加收0.15元<br/>4.0公里(不含)以上，每0.1公里加收0.14元</div>
-          <div class="sub-title">b. 价格收费</div>
-          <div>收费基数=商品小计-商家活动支出</div>
-          <div>0元(不含)-25元(含)，收0元<br/>25元(不含)-30元(含)，每上涨1元加收0.19元<br/>30元(不含)以上，每上涨1元加收0.15元</div>
-          <div class="sub-title">c. 时段收费</div>
-          <div>00:00(不含)-02:00(含):每单加收0.8元<br/>02:00(不含)-06:00(含):每单加收1元<br/>21:00(不含)-24:00(含):每单加收0.3元</div>
+        <div></div>
+        <div text-sm>
+          <div font-medium text-base text-black>饿了么-蜂鸟准时达</div>
+          <div text-gray-800 my-2 >1. 佣金收费规则</div>
+          <div text-gray-500 pl-4 >商品优惠后金额  佣金比例 6.4% （保底 1.38元）</div>
+          <div text-gray-800 my-2 >2. 配送服务费</div>
+          <div text-gray-500 pl-4 >配送服务费=距离收费+时段收费</div>
+          <div text-gray-800 pl-4 my-2 >a. 距离收费</div>
+          <div text-gray-500 pl-8 >0.0公里(含)-2.5公里(含)，收起步价2.55元<br/>2.5公里(不含)-4.0公里(含)，每0.5公里加收0.5元<br/>4.0公里(不含)以上，每0.5公里加收0.7元</div>
+          <div text-gray-800 pl-4 my-2 >b. 时段收费</div>
+          <div text-gray-500 pl-8 >00:00(不含)-02:59(含):每单加收1元<br/>03:00(不含)-05:59(含):每单加收1.5元<br/>21:00(不含)-23:59(含):每单加收0.5元</div>
         </div>
-        
-      </a-flex>
-      
+      </a-flex> -->
     </a-collapse-panel>
   </a-collapse>
 </template>
 
-<style scoped lang="scss">
-.active-box {
-  padding-left: 20px;
-  padding-right: 20px;
-}
-.active-item {
-  margin: 10px 0 10px 14px;
-  span {
-    padding: 0 8px;
-  }
-}
-</style>
+<style scoped lang="scss"></style>

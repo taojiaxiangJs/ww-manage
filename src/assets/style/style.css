@@ -1,0 +1,8 @@
+html {
+  /* font-size: 4px; 方便unocss计算：1单位 = 0.25rem = 1px  */
+  font-size: 16px;
+}
+
+body {
+  font-size: 16px;
+}
