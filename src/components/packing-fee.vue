@@ -7,43 +7,12 @@ const [modal, contextHolder] = Modal.useModal();
 
 
 const activeKey = ref('mt');
-// const rangeFee_mt = ref({
-//   normal: 20, // 正常时段
-//   night: 20,  // 夜宵时段
-//   unbalance: 20  // 供需失衡
-// })
-// const timepartFee_mt = ref([
-//   {
-//     time: ['00:00', '23:59'],
-//     range: [
-//       {
-//         min: 0,
-//         max: 3,
-//         fee: 20
-//       },{
-//         min: 3,
-//         max: 4,
-//         fee: 25
-//       },{
-//         min: 4,
-//         max: 5,
-//         fee: 30
-//       },{
-//         min: 5,
-//         max: '∞',
-//         fee: 36
-//       }
-//     ]
-//   }
-// ])
-
-const packingFeeData = defineModel({
-  rangeFee_mt: {
-    normal: 20, // 正常时段
-    night: 20,  // 夜宵时段
-    unbalance: 20  // 供需失衡
-  },
-  timepartFee_mt: [
+const rangeFee_mt = ref({
+  normal: 20, // 正常时段
+  night: 20,  // 夜宵时段
+  unbalance: 20  // 供需失衡
+})
+const timepartFee_mt = ref([
   {
     time: ['00:00', '23:59'],
     range: [
@@ -66,9 +35,11 @@ const packingFeeData = defineModel({
       }
     ]
   }
-  ]
-})
+])
 
+const packingFeeData = defineModel()
+packingFeeData.value.rangeFee_mt = rangeFee_mt.value
+packingFeeData.value.timepartFee_mt = timepartFee_mt.value
 
 const editDistanceRangeOpen = ref(false)
 const editDistanceRangeData = reactive({
@@ -207,107 +178,107 @@ watch(
 <template>
   <div>
     <a-tabs v-model:activeKey="activeKey">
-    <a-tab-pane key="mt">
-      <template #tab>
-        <span>
-          美团
-        </span>
-      </template>
-      <a-flex justify="space-between">
-        <div flex flex-1>
-          <div mr-40>
-            <div font-medium text-base text-black>按配送范围设置起送价</div>
-            <div text-gray-500 pl-4 my-2 >命中多个配送范围时，按起送价最低的范围生效</div>
-            <div pt-3 pb-2>
-              <span style="width: 4px;height: 10px;" inline-block bg-cyan-500 text-white rounded-sm mt-1.5 mr-1></span>
-              正常时段（00:00 - 24:00）
+      <a-tab-pane key="mt">
+        <template #tab>
+          <span>
+            美团
+          </span>
+        </template>
+        <a-flex justify="space-between">
+          <div flex flex-1>
+            <div mr-40>
+              <div font-medium text-base text-black>按配送范围设置起送价</div>
+              <div text-gray-500 pl-4 my-2 >命中多个配送范围时，按起送价最低的范围生效</div>
+              <div pt-3 pb-2>
+                <span style="width: 4px;height: 10px;" inline-block bg-cyan-500 text-white rounded-sm mt-1.5 mr-1></span>
+                正常时段（00:00 - 24:00）
+              </div>
+              <div pl-1>
+                <span px-2>快送（42.24平方公里）</span>
+                <a-input-number v-model:value="rangeFee_mt.normal" :min="1" :max="100" size="small" />元
+                <span px-2>起送</span>
+              </div>
+              <div pt-3 pb-2>
+                <span style="width: 4px;height: 10px;" inline-block bg-cyan-500 text-white rounded-sm mt-1.5 mr-1></span>
+                夜宵时段（21:00 - 次日06:00）
+              </div>
+              <div pl-1>
+                <span px-2>快送（57.06平方公里）</span>
+                <a-input-number v-model:value="rangeFee_mt.night" :min="1" :max="100" size="small" />元
+                <span px-2>起送</span>
+              </div>
+              <div pt-3 pb-2>
+                <span style="width: 4px;height: 10px;" inline-block bg-cyan-500 text-white rounded-sm mt-1.5 mr-1></span>
+                供需失衡（临时范围和价格）
+              </div>
+              <div pl-1>
+                <span px-2>快送（7.54平方公里）</span>
+                <a-input-number v-model:value="rangeFee_mt.normal" :min="1" :max="100" size="small" />元
+                <span px-2>起送</span>
+              </div>
             </div>
-            <div pl-1>
-              <span px-2>快送（42.24平方公里）</span>
-              <a-input-number v-model:value="rangeFee_mt.normal" :min="1" :max="100" size="small" />元
-              <span px-2>起送</span>
-            </div>
-            <div pt-3 pb-2>
-              <span style="width: 4px;height: 10px;" inline-block bg-cyan-500 text-white rounded-sm mt-1.5 mr-1></span>
-              夜宵时段（21:00 - 次日06:00）
-            </div>
-            <div pl-1>
-              <span px-2>快送（57.06平方公里）</span>
-              <a-input-number v-model:value="rangeFee_mt.night" :min="1" :max="100" size="small" />元
-              <span px-2>起送</span>
-            </div>
-            <div pt-3 pb-2>
-              <span style="width: 4px;height: 10px;" inline-block bg-cyan-500 text-white rounded-sm mt-1.5 mr-1></span>
-              供需失衡（临时范围和价格）
-            </div>
-            <div pl-1>
-              <span px-2>快送（7.54平方公里）</span>
-              <a-input-number v-model:value="rangeFee_mt.normal" :min="1" :max="100" size="small" />元
-              <span px-2>起送</span>
-            </div>
-          </div>
-          <div flex-1 mr-40>
-            <div font-medium text-base text-black>按距离和时段设置起送价</div>
-            <div text-gray-500 pl-4 my-2 >可根据经营需要，在特殊时段（如出参高峰期、夜宵时段等），按配送距离远近设置不同的起送价格</div>
-            <a-button type="primary" size="small" @click="handelDistanceRange('add')">新增时段</a-button>
-            <div flex mt-4>
-              <div v-for="(item, index) in timepartFee_mt" :key="item.time" mr-22>
-                <div v-if="item.time.length === 2">
-                  <div my-2 font-semibold text-gray-500 text-xl flex items-center>
-                    <span style="width: 4px;height: 10px;" inline-block bg-cyan-500 text-white rounded-sm mt-1.5></span>
-                    <span mx-2 text-orange-400>{{ item.time[0] }} - {{ item.time[1] }}</span>
-                    <FormOutlined @click="handelDistanceRange('edit',index)" style="color: #1677FF;font-size: 18px; margin-left: 6px;"/>
-                    <DeleteOutlined @click="delPartTime()" v-if="index" style="color: #FF4D4F;font-size: 18px; margin-left: 6px;"/>
-                  </div>
-                  <div v-for="(d,i) in item.range" :key="i" my-2 ml-5>
-                    <span mr-2 v-if="d.max !== '∞'">{{ d.min }}-{{ d.max }}（包含）公里</span>
-                    <span mr-2 v-else>超过{{ d.min }}公里</span>
-                    <a-input-number v-model:value="d.fee" :min="1" :max="100" size="small"/>
-                    <span ml-2>元起送</span>
+            <div flex-1 mr-40>
+              <div font-medium text-base text-black>按距离和时段设置起送价</div>
+              <div text-gray-500 pl-4 my-2 >可根据经营需要，在特殊时段（如出参高峰期、夜宵时段等），按配送距离远近设置不同的起送价格</div>
+              <a-button type="primary" size="small" @click="handelDistanceRange('add')">新增时段</a-button>
+              <div flex mt-4>
+                <div v-for="(item, index) in timepartFee_mt" :key="item.time" mr-22>
+                  <div v-if="item.time.length === 2">
+                    <div my-2 font-semibold text-gray-500 text-xl flex items-center>
+                      <span style="width: 4px;height: 10px;" inline-block bg-cyan-500 text-white rounded-sm mt-1.5></span>
+                      <span mx-2 text-orange-400>{{ item.time[0] }} - {{ item.time[1] }}</span>
+                      <FormOutlined @click="handelDistanceRange('edit',index)" style="color: #1677FF;font-size: 18px; margin-left: 6px;"/>
+                      <DeleteOutlined @click="delPartTime()" v-if="index" style="color: #FF4D4F;font-size: 18px; margin-left: 6px;"/>
+                    </div>
+                    <div v-for="(d,i) in item.range" :key="i" my-2 ml-5>
+                      <span mr-2 v-if="d.max !== '∞'">{{ d.min }}-{{ d.max }}（包含）公里</span>
+                      <span mr-2 v-else>超过{{ d.min }}公里</span>
+                      <a-input-number v-model:value="d.fee" :min="1" :max="100" size="small"/>
+                      <span ml-2>元起送</span>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
-        <div text-sm>
-          <div font-medium text-base text-black>美团快送</div>
-          <div text-gray-800 my-2 >1. 佣金收费规则</div>
-          <div text-gray-500 pl-4 >商品优惠后金额  佣金比例 6.4% （保底 1.38元）</div>
-          <div text-gray-800 my-2 >2. 配送服务费</div>
-          <div text-gray-500 pl-4 >配送服务费=距离收费+价格收费+时段收费</div>
-          <div text-gray-800 pl-4 my-2 >a. 距离收费</div>
-          <div text-gray-500 pl-8 >0.0公里(含)-3.0公里(含)，收起步价2.5元<br/>3.0公里(不含)-4.0公里(含)，每0.1公里加收0.15元<br/>4.0公里(不含)以上，每0.1公里加收0.14元</div>
-          <div text-gray-800 pl-4 my-2 >b. 价格收费</div>
-          <div text-gray-500 pl-8 >收费基数=商品小计-商家活动支出</div>
-          <div text-gray-500 pl-8 >0元(不含)-25元(含)，收0元<br/>25元(不含)-30元(含)，每上涨1元加收0.19元<br/>30元(不含)以上，每上涨1元加收0.15元</div>
-          <div text-gray-800 pl-4 my-2 >c. 时段收费</div>
-          <div text-gray-500 pl-8 >00:00(不含)-02:00(含):每单加收0.8元<br/>02:00(不含)-06:00(含):每单加收1元<br/>21:00(不含)-24:00(含):每单加收0.3元</div>
-        </div>
-      </a-flex>
-    </a-tab-pane>
-    <a-tab-pane key="ele">
-      <template #tab>
-        <span>
-          饿了么
-        </span>
-      </template>
-      <a-flex justify="space-between">
-        <div></div>
-        <div text-sm>
-          <div font-medium text-base text-black>饿了么-蜂鸟准时达</div>
-          <div text-gray-800 my-2 >1. 佣金收费规则</div>
-          <div text-gray-500 pl-4 >商品优惠后金额  佣金比例 6.4% （保底 1.38元）</div>
-          <div text-gray-800 my-2 >2. 配送服务费</div>
-          <div text-gray-500 pl-4 >配送服务费=距离收费+时段收费</div>
-          <div text-gray-800 pl-4 my-2 >a. 距离收费</div>
-          <div text-gray-500 pl-8 >0.0公里(含)-2.5公里(含)，收起步价2.55元<br/>2.5公里(不含)-4.0公里(含)，每0.5公里加收0.5元<br/>4.0公里(不含)以上，每0.5公里加收0.7元</div>
-          <div text-gray-800 pl-4 my-2 >b. 时段收费</div>
-          <div text-gray-500 pl-8 >00:00(不含)-02:59(含):每单加收1元<br/>03:00(不含)-05:59(含):每单加收1.5元<br/>21:00(不含)-23:59(含):每单加收0.5元</div>
-        </div>
-      </a-flex>
-    </a-tab-pane>
-  </a-tabs>
+          <div text-sm>
+            <div font-medium text-base text-black>美团快送</div>
+            <div text-gray-800 my-2 >1. 佣金收费规则</div>
+            <div text-gray-500 pl-4 >商品优惠后金额  佣金比例 6.4% （保底 1.38元）</div>
+            <div text-gray-800 my-2 >2. 配送服务费</div>
+            <div text-gray-500 pl-4 >配送服务费=距离收费+价格收费+时段收费</div>
+            <div text-gray-800 pl-4 my-2 >a. 距离收费</div>
+            <div text-gray-500 pl-8 >0.0公里(含)-3.0公里(含)，收起步价2.5元<br/>3.0公里(不含)-4.0公里(含)，每0.1公里加收0.15元<br/>4.0公里(不含)以上，每0.1公里加收0.14元</div>
+            <div text-gray-800 pl-4 my-2 >b. 价格收费</div>
+            <div text-gray-500 pl-8 >收费基数=商品小计-商家活动支出</div>
+            <div text-gray-500 pl-8 >0元(不含)-25元(含)，收0元<br/>25元(不含)-30元(含)，每上涨1元加收0.19元<br/>30元(不含)以上，每上涨1元加收0.15元</div>
+            <div text-gray-800 pl-4 my-2 >c. 时段收费</div>
+            <div text-gray-500 pl-8 >00:00(不含)-02:00(含):每单加收0.8元<br/>02:00(不含)-06:00(含):每单加收1元<br/>21:00(不含)-24:00(含):每单加收0.3元</div>
+          </div>
+        </a-flex>
+      </a-tab-pane>
+      <a-tab-pane key="ele">
+        <template #tab>
+          <span>
+            饿了么
+          </span>
+        </template>
+        <a-flex justify="space-between">
+          <div></div>
+          <div text-sm>
+            <div font-medium text-base text-black>饿了么-蜂鸟准时达</div>
+            <div text-gray-800 my-2 >1. 佣金收费规则</div>
+            <div text-gray-500 pl-4 >商品优惠后金额  佣金比例 6.4% （保底 1.38元）</div>
+            <div text-gray-800 my-2 >2. 配送服务费</div>
+            <div text-gray-500 pl-4 >配送服务费=距离收费+时段收费</div>
+            <div text-gray-800 pl-4 my-2 >a. 距离收费</div>
+            <div text-gray-500 pl-8 >0.0公里(含)-2.5公里(含)，收起步价2.55元<br/>2.5公里(不含)-4.0公里(含)，每0.5公里加收0.5元<br/>4.0公里(不含)以上，每0.5公里加收0.7元</div>
+            <div text-gray-800 pl-4 my-2 >b. 时段收费</div>
+            <div text-gray-500 pl-8 >00:00(不含)-02:59(含):每单加收1元<br/>03:00(不含)-05:59(含):每单加收1.5元<br/>21:00(不含)-23:59(含):每单加收0.5元</div>
+          </div>
+        </a-flex>
+      </a-tab-pane>
+    </a-tabs>
   </div>
   <a-modal v-model:open="editDistanceRangeOpen" title="编辑时段和距离" @ok="handleEditDistanceRangeOk" cancelText="取消" okText="确定" width="660px">
     <div mx-8 mt-8 mb-4>

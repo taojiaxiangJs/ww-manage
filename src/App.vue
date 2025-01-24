@@ -165,6 +165,10 @@ const base_foods = ref({
     },
   ],
 })
+
+const logFn = () => {
+  console.log(packingFeeData.value);
+}
 </script>
 
 <template>
@@ -178,6 +182,7 @@ const base_foods = ref({
       <packingFeeComponent v-model="packingFeeData"></packingFeeComponent>
     </a-collapse-panel>
   </a-collapse>
+  <a-button type="primary" size="small" @click="logFn()">打印</a-button>
 </template>
 
 <style scoped lang="scss"></style>
