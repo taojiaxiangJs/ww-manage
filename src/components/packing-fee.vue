@@ -1,20 +1,51 @@
 <script setup>
-import { ref, h } from 'vue';
+import { ref, h, watch, reactive } from 'vue';
 import dayjs from 'dayjs';
 import { message, Modal } from 'ant-design-vue';
-import { ExclamationCircleOutlined } from '@ant-design/icons-vue'
+import { ExclamationCircleOutlined, PlusCircleOutlined, DeleteOutlined, FormOutlined } from '@ant-design/icons-vue'
 const [modal, contextHolder] = Modal.useModal();
 
 
 const activeKey = ref('mt');
-const range_pp_fee = ref({
-  normal: 20, // 正常时段
-  night: 20,  // 夜宵时段
-  unbalance: 20  // 供需失衡
-})
-const timepart_packingfee_mt = ref([
+// const rangeFee_mt = ref({
+//   normal: 20, // 正常时段
+//   night: 20,  // 夜宵时段
+//   unbalance: 20  // 供需失衡
+// })
+// const timepartFee_mt = ref([
+//   {
+//     time: ['00:00', '23:59'],
+//     range: [
+//       {
+//         min: 0,
+//         max: 3,
+//         fee: 20
+//       },{
+//         min: 3,
+//         max: 4,
+//         fee: 25
+//       },{
+//         min: 4,
+//         max: 5,
+//         fee: 30
+//       },{
+//         min: 5,
+//         max: '∞',
+//         fee: 36
+//       }
+//     ]
+//   }
+// ])
+
+const packingFeeData = defineModel({
+  rangeFee_mt: {
+    normal: 20, // 正常时段
+    night: 20,  // 夜宵时段
+    unbalance: 20  // 供需失衡
+  },
+  timepartFee_mt: [
   {
-    time: '00:00-24:00',
+    time: ['00:00', '23:59'],
     range: [
       {
         min: 0,
@@ -35,68 +66,142 @@ const timepart_packingfee_mt = ref([
       }
     ]
   }
-])
-const timepart_packingfee_mt_add = ref({
-  time:'',
-  range: [
-    {
-      min: 1,
-      max: '∞',
-      fee: 20
-    }
   ]
 })
-const addPartTime = ()=> {
-  addTimePartModelOpen.value = true
+
+
+const editDistanceRangeOpen = ref(false)
+const editDistanceRangeData = reactive({
+  type: 'add',
+  index: 0,
+  time: [],
+  range: []
+})
+const handelDistanceRange = (type, index) => {
+  editDistanceRangeData.type = type
+  if(type === 'add') {
+    editDistanceRangeData.time = []
+    editDistanceRangeData.range = [{
+      min: 0,
+      max: 3,
+      fee: 20
+    },{
+      min: 3,
+      max: '∞',
+      fee: 30
+    }]
+  }
+  if(type === 'edit') {
+    editDistanceRangeData.index = index
+    let start_time = dayjs(timepartFee_mt.value[index].time[0], 'HH:mm')
+    let end_time = dayjs(timepartFee_mt.value[index].time[1], 'HH:mm')
+    editDistanceRangeData.time = [start_time, end_time]
+    editDistanceRangeData.range = JSON.parse(JSON.stringify(timepartFee_mt.value[index].range))
+  }
+  editDistanceRangeOpen.value = true
 }
-const addTimePartModelOpen = ref(false)
-const addTimePartValue = ref([])
-const handleAddTimePartOk = () => {
-  if(addTimePartValue.value.length) {
-    addTimePartModelOpen.value = false
-    timepart_packingfee_mt_add.value.time = dayjs(addTimePartValue.value[0]).format('HH:mm') + '-' + dayjs(addTimePartValue.value[1]).format('HH:mm')
-    timepart_packingfee_mt.value.push(timepart_packingfee_mt_add.value)
+const handleEditDistanceRangeOk = () => {
+  if(editDistanceRangeData.time.length) {
+    let time = [dayjs(editDistanceRangeData.time[0]).format('HH:mm'), dayjs(editDistanceRangeData.time[1]).format('HH:mm')]
+    let distance_flag = true
+    let fee_flag = true
+    if(editDistanceRangeData.range.length === 1) {
+      distance_flag = editDistanceRangeData.range[0].min >= 0
+      fee_flag = editDistanceRangeData.range[0].fee >= 0
+    }else{
+      let pre_max = 0
+      let pre_fee = 0
+      editDistanceRangeData.range.forEach((item, index) => {
+        if(item.min > item.max) {
+          distance_flag = false
+        }
+        if(item.min !== pre_max && index > 0) {
+          distance_flag = false
+        }
+        if(item.fee <= pre_fee && index > 0) {
+          fee_flag = false
+        }
+        pre_max = item.max
+        pre_fee = item.fee
+      })
+    }
+    if(!fee_flag) {
+      message.error('请合理设置起送价！');
+      return
+    }
+    if(!distance_flag) {
+      message.error('请合理设置阶梯式配送距离！');
+      return
+    }
+    editDistanceRangeOpen.value = false
+    if(editDistanceRangeData.type === 'add') {
+      timepartFee_mt.value.push({
+        time: time,
+        range: editDistanceRangeData.range
+      })
+    }
+    if(editDistanceRangeData.type === 'edit') {
+      timepartFee_mt.value[editDistanceRangeData.index].time = time
+      timepartFee_mt.value[editDistanceRangeData.index].range = editDistanceRangeData.range 
+    }
+    editDistanceRangeData.type = 'add'
+    editDistanceRangeData.index = 0
+    editDistanceRangeData.time = []
+    editDistanceRangeData.range = []
   }else{
-    message.error('请选择时间');
+    message.error('请选择时间段');
   }
 }
+const addDistanceRangeItem = (index) => {
+  if(index) {
+    editDistanceRangeData.range.splice(index + 1, 0, {
+      min: 0,
+      max: 0,
+      fee: 0
+    })
+  }else{
+    editDistanceRangeData.range.unshift({
+      min: 0,
+      max: 0,
+      fee: 0
+    })
+  }
+}
+const delDistanceRangeItem = (index) => {
+  editDistanceRangeData.range.splice(index, 1)
+}
 
+// 删除时段
 const delPartTime = (index) => {
   modal.confirm({
     title: '提示',
     icon: h(ExclamationCircleOutlined),
     okText: '确定',
     cancelText: '取消',
-    content: h(
-      'div',
-      {
-        style: 'font-size: 20px;padding: 10px 0;',
-      },
-      '确定删除该时间段?',
-    ),
+    content: h('div', {style: 'font-size: 20px;padding: 10px 0;'}, '确定删除该时间段?'),
     onOk() {
-      timepart_packingfee_mt.value.splice(index, 1)
+      timepartFee_mt.value.splice(index, 1)
     },
     onCancel() {},
     class: 'test',
   });
 }
 
-
-const editDistanceRangeOpen = ref(false)
-let editDistanceRangeData = ref({
-  index: 0,
-  range: []
-})
-const editDistanceRange = (index) => {
-  editDistanceRangeData.value.index = index
-  editDistanceRangeData.value.range = timepart_packingfee_mt.value[index].range
-  editDistanceRangeOpen.value = true
-}
-
-const handleEditDistanceRangeOk = () => {
-  
-}
+// 监听距离段
+watch(
+  () => editDistanceRangeData.range, 
+  (newValue) => {
+    if(newValue.length > 1) {
+      let len = newValue.length - 1
+      editDistanceRangeData.range[len].min = editDistanceRangeData.range[len-1].max
+      editDistanceRangeData.range[len].max = '∞'
+    }else if(newValue.length === 1){
+      editDistanceRangeData.range[0].min = 0
+      editDistanceRangeData.range[0].max = '∞'
+    }
+  },
+  { deep: true }
+)
 </script>
 
 <template>
@@ -109,52 +214,61 @@ const handleEditDistanceRangeOk = () => {
         </span>
       </template>
       <a-flex justify="space-between">
-        <div>
-          <div font-medium text-base text-black>按配送范围设置起送价</div>
-          <div text-gray-500 pl-4 my-2 >命中多个配送范围时，按起送价最低的范围生效</div>
-          <div>正常时段（00:00 - 24:00）</div>
-          <div>
-            <span px-2>快送（42.24平方公里）</span>
-            <a-input-number v-model:value="range_pp_fee.normal" :min="1" :max="100" size="small" />元
-            <span px-2>起送</span>
+        <div flex flex-1>
+          <div mr-40>
+            <div font-medium text-base text-black>按配送范围设置起送价</div>
+            <div text-gray-500 pl-4 my-2 >命中多个配送范围时，按起送价最低的范围生效</div>
+            <div pt-3 pb-2>
+              <span style="width: 4px;height: 10px;" inline-block bg-cyan-500 text-white rounded-sm mt-1.5 mr-1></span>
+              正常时段（00:00 - 24:00）
+            </div>
+            <div pl-1>
+              <span px-2>快送（42.24平方公里）</span>
+              <a-input-number v-model:value="rangeFee_mt.normal" :min="1" :max="100" size="small" />元
+              <span px-2>起送</span>
+            </div>
+            <div pt-3 pb-2>
+              <span style="width: 4px;height: 10px;" inline-block bg-cyan-500 text-white rounded-sm mt-1.5 mr-1></span>
+              夜宵时段（21:00 - 次日06:00）
+            </div>
+            <div pl-1>
+              <span px-2>快送（57.06平方公里）</span>
+              <a-input-number v-model:value="rangeFee_mt.night" :min="1" :max="100" size="small" />元
+              <span px-2>起送</span>
+            </div>
+            <div pt-3 pb-2>
+              <span style="width: 4px;height: 10px;" inline-block bg-cyan-500 text-white rounded-sm mt-1.5 mr-1></span>
+              供需失衡（临时范围和价格）
+            </div>
+            <div pl-1>
+              <span px-2>快送（7.54平方公里）</span>
+              <a-input-number v-model:value="rangeFee_mt.normal" :min="1" :max="100" size="small" />元
+              <span px-2>起送</span>
+            </div>
           </div>
-          <div>夜宵时段（21:00 - 次日06:00）</div>
-          <div>
-            <span px-2>快送（57.06平方公里）</span>
-            <a-input-number v-model:value="range_pp_fee.night" :min="1" :max="100" size="small" />元
-            <span px-2>起送</span>
-          </div>
-          <div>供需失衡（临时范围和价格）</div>
-          <div>
-            <span px-2>快送（7.54平方公里）</span>
-            <a-input-number v-model:value="range_pp_fee.normal" :min="1" :max="100" size="small" />元
-            <span px-2>起送</span>
-          </div>
-        </div>
-        <div>
-          <div font-medium text-base text-black>按距离和时段设置起送价</div>
-          <div text-gray-500 pl-4 my-2 >可根据经营需要，在特殊时段（如出参高峰期、夜宵时段等），按配送距离远近设置不同的起送价格</div>
-          <a-button type="primary" size="small" @click="addPartTime()">新增时段</a-button>
-          <div flex>
-            <div v-for="(item, index) in timepart_packingfee_mt" :key="item.time" mr-22>
-              <div my-2 font-semibold text-gray-500 text-xl flex items-center>
-                <span style="width: 4px;height: 10px;" inline-block bg-cyan-500 text-white rounded-sm mt-1.5></span>
-                <span mx-2 text-orange-400>{{ item.time }}</span>
-                <a-button danger size="small" @click="delPartTime()">删除</a-button>
-              </div>
-              <div v-for="(d,i) in item.range" :key="i" my-2 ml-5>
-                <span mr-2 v-if="d.max !== '∞'">{{ d.min }}-{{ d.max }}（包含）公里</span>
-                <span mr-2 v-else>超过{{ d.min }}公里</span>
-                <a-input-number v-model:value="d.fee" :min="1" :max="100" size="small"/>
-                <span ml-2>元起送</span>
-              </div>
-              <div float-right>
-                <a-button type="primary" size="small" @click="editDistanceRange(index)">编辑距离</a-button>
+          <div flex-1 mr-40>
+            <div font-medium text-base text-black>按距离和时段设置起送价</div>
+            <div text-gray-500 pl-4 my-2 >可根据经营需要，在特殊时段（如出参高峰期、夜宵时段等），按配送距离远近设置不同的起送价格</div>
+            <a-button type="primary" size="small" @click="handelDistanceRange('add')">新增时段</a-button>
+            <div flex mt-4>
+              <div v-for="(item, index) in timepartFee_mt" :key="item.time" mr-22>
+                <div v-if="item.time.length === 2">
+                  <div my-2 font-semibold text-gray-500 text-xl flex items-center>
+                    <span style="width: 4px;height: 10px;" inline-block bg-cyan-500 text-white rounded-sm mt-1.5></span>
+                    <span mx-2 text-orange-400>{{ item.time[0] }} - {{ item.time[1] }}</span>
+                    <FormOutlined @click="handelDistanceRange('edit',index)" style="color: #1677FF;font-size: 18px; margin-left: 6px;"/>
+                    <DeleteOutlined @click="delPartTime()" v-if="index" style="color: #FF4D4F;font-size: 18px; margin-left: 6px;"/>
+                  </div>
+                  <div v-for="(d,i) in item.range" :key="i" my-2 ml-5>
+                    <span mr-2 v-if="d.max !== '∞'">{{ d.min }}-{{ d.max }}（包含）公里</span>
+                    <span mr-2 v-else>超过{{ d.min }}公里</span>
+                    <a-input-number v-model:value="d.fee" :min="1" :max="100" size="small"/>
+                    <span ml-2>元起送</span>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
-          
-          
         </div>
         <div text-sm>
           <div font-medium text-base text-black>美团快送</div>
@@ -195,17 +309,22 @@ const handleEditDistanceRangeOk = () => {
     </a-tab-pane>
   </a-tabs>
   </div>
-  <a-modal v-model:open="addTimePartModelOpen" title="添加时段" @ok="handleAddTimePartOk" cancelText="取消" okText="确定">
+  <a-modal v-model:open="editDistanceRangeOpen" title="编辑时段和距离" @ok="handleEditDistanceRangeOk" cancelText="取消" okText="确定" width="660px">
     <div mx-8 mt-8 mb-4>
-      <a-time-range-picker v-model:value="addTimePartValue" format="HH:mm" :placeholder="['开始时间', '结束时间']"/>
-    </div>
-  </a-modal>
-  <a-modal v-model:open="editDistanceRangeOpen" title="编辑距离" @ok="handleEditDistanceRangeOk" cancelText="取消" okText="确定">
-    <div mx-8 mt-8 mb-4>
-      <div v-for="(item,index) in editDistanceRangeData.range" :key="index">
-        <a-input-number v-model:value="item.min" :min="0" :max="100" size="small"/>公里 - 
-        <a-input-number v-model:value="item.max" :min="0" :max="100" size="small"/>（包含）公里
-        <a-input-number v-model:value="item.fee" :min="1" :max="100" size="small"/>元起送
+      <a-time-range-picker v-model:value="editDistanceRangeData.time" format="HH:mm" :placeholder="['开始时间', '结束时间']"/>
+      <div v-for="(item,index) in editDistanceRangeData.range" :key="index" my-4>
+        <div v-if="index < editDistanceRangeData.range.length - 1" flex items-center>
+          <a-input-number v-model:value="item.min" :min="0" :max="100" size="small"/><text>公里 - </text>
+          <a-input-number v-model:value="item.max" :min="0" :max="100" size="small"/><text mr-6>（包含）公里</text>
+          <a-input-number v-model:value="item.fee" :min="1" :max="100" size="small"/><text mr-4>元起送</text>
+          <DeleteOutlined @click="delDistanceRangeItem(index)" style="color: #FF4D4F;font-size: 20px; margin-left: 6px;"/>
+          <PlusCircleOutlined @click="addDistanceRangeItem(index)" v-if="index === editDistanceRangeData.range.length - 2" style="color: #1677FF;font-size: 20px; margin-left: 6px;"/>
+        </div>
+        <div v-else flex items-center>
+          <text mr-6>超过 {{ item.min }} 公里</text>
+          <a-input-number v-model:value="item.fee" :min="1" :max="100" size="small"/>元起送
+          <PlusCircleOutlined @click="addDistanceRangeItem(index)" v-if="editDistanceRangeData.range.length === 1" style="color: #1677FF;font-size: 20px; margin-left: 6px;"/>
+        </div>
       </div>
     </div>
   </a-modal>
