@@ -1,54 +1,129 @@
 <script setup>
-import { ref } from 'vue'
+import { reactive, ref } from 'vue'
 import { message } from 'ant-design-vue'
 const [messageApi, contextHolder] = message.useMessage()
 import { DeleteOutlined, QuestionCircleOutlined } from '@ant-design/icons-vue'
 const activeKey = ref('mt')
-const activity_mt = ref({
-  // 满减
-  maxout_check: true,
-  maxout_list: [
+const activity = reactive({
+  /**
+   * isCheck: 是否选中
+   * value_type: 0: 仅有一个value对象;  1: value对象存在多个
+   * use_type: 用户的使用次数类型  1: 仅1次  0：多次
+   * value: 活动值
+   *    reach： 满减金额
+   *    reduced： 减免金额 
+  */
+  mt: [
     {
-      reach: '',
-      reduced: '',
+      key: 'maxout',
+      name: '满减',
+      value_type: 1,
+      use_type: 0,
     },
-  ],
-  delivery_check: true, // 配送费立减
-  delivery: 3,
-  new_customer_check: true, // 新客户立减
-  new_customer: 1,
-  collect_check: true, // 收藏立减
-  collect: {
-    reach: 0,
-    reduced: 1,
-  },
-  swell_ticket_check: true,
-  swell_ticket: 5,
-  ticket_check: false,
-  ticket_list: [
     {
-      reach: '',
-      reduced: '',
+      key: 'delivery',
+      name: '配送费立减',
+      value_type: 0,
+      use_type: 0,
     },
+    {
+      key: 'customer',
+      name: '新客户立减',
+      value_type: 0,
+      use_type: 1,
+    },
+    {
+      key: 'follow',
+      name: '关注有礼',
+      value_type: 0,
+      use_type: 1,
+    },
+    {
+      key: 'surprise',
+      name: '神券红包',
+      value_type: 0,
+      use_type: 0,
+    },
+    {
+      key: 'ticket',
+      name: '店铺券',
+      tips: '可设置顾客类型（新客、老客、全部）、券的发放数量、生效日期及指定时间段、券有效期',
+      value_type: 1,
+      use_type: 0,
+    }
   ],
+  ele: [
+    {
+      key: 'maxout',
+      name: '满减',
+      value_type: 1,
+      use_type: 0,
+    },
+    {
+      key: 'delivery',
+      name: '配送费立减',
+      value_type: 0,
+      use_type: 0,
+    },
+    {
+      key: 'customer',
+      name: '新客户立减',
+      value_type: 0,
+      use_type: 1,
+    },
+    {
+      key: 'follow',
+      name: '关注有礼',
+      value_type: 0,
+      use_type: 1,
+    },
+    {
+      key: 'surprise',
+      name: '神券红包',
+      value_type: 1,
+      use_type: 0,
+    },
+    {
+      key: 'ticket',
+      name: '店铺券',
+      tips: '可设置顾客类型（新客、老客、全部）、券的发放数量、生效日期及指定时间段、券有效期',
+      value_type: 1,
+      use_type: 0,
+    }
+  ]
 })
 
-const activityData = defineModel()
-activityData.value.activity_mt = activity_mt.value
+const initActivity = (type)=> {
+  activity[type].forEach(e=> {
+    e.isCheck = true
+    e.value = [
+      {
+        reach: '',
+        reduced: '',
+      }
+    ]
+  })
+}
+initActivity('mt')  // 美团
+initActivity('ele')  // 美团
 
-const addMaxout = (type) => {
-  let list = activity_mt.value[`${type}_list`].filter((e) => !e.reach || !e.reduced)
+
+const activityData = defineModel()
+activityData.value.activity = activity
+
+const addMaxout = (item) => {
+  let list = item.value.filter((e) => !e.reach || !e.reduced)
   if (list.length) {
     messageApi.warning('满减项请输入大于0的整数')
     return
   }
-  activity_mt.value[`${type}_list`].push({
+  item.value.push({
     reach: '',
     reduced: '',
   })
 }
-const delMaxout = (type, index) => {
-  activity_mt.value[`${type}_list`].splice(index, 1)
+const delMaxout = (item, index) => {
+  item.value.splice(index, 1)
 }
 </script>
 
@@ -62,66 +137,32 @@ const delMaxout = (type, index) => {
         </span>
       </template>
       <a-flex>
-        <!-- 满减 -->
-        <div py-4  mr-40>
+        <div py-4 mr-40 v-for="item in activity.mt" :key="item.key">
           <a-flex vertical>
-            <a-checkbox v-model:checked="activity_mt.maxout_check">满减:</a-checkbox>
-            <div my-2 ml-4 v-for="(maxout, i) in activity_mt.maxout_list" :key="i">
-              <span px-2>满</span>
-              <a-input-number v-model:value="maxout.reach" :min="1" :max="10" size="small" />元
-              <span px-2>减</span>
-              <a-input-number v-model:value="maxout.reduced" :min="1" :max="10" size="small" />元
-              <a-button type="text" size="small" danger @click="delMaxout('maxout', i)" v-if="i"><DeleteOutlined /></a-button>
+            <div flex justify-between>
+              <a-checkbox v-model:checked="item.isCheck">
+                {{ item.name }}
+                <template v-if="!!item.tips">
+                  <a-tooltip>
+                    <template #delivery-title>{{ item.tips }}</template>
+                    <QuestionCircleOutlined />
+                  </a-tooltip>
+                </template>
+              </a-checkbox>
+              <a-button v-if="item.value_type === 1" type="primary" size="small" @click="addMaxout(item)">添加阶梯</a-button>
             </div>
-            <a-button type="primary" size="small" @click="addMaxout('maxout')">添加</a-button>
-          </a-flex>
-        </div>
-
-        <!-- 配送费优惠 -->
-        <div py-4  mr-40>
-          <a-flex vertical style="margin-bottom: 10px">
-            <a-checkbox v-model:checked="activity_mt.delivery_check"> 配送费 </a-checkbox>
-            <div my-2 ml-4>配送费优惠:<a-input-number v-model:value="activity_mt.delivery" :min="1" :max="10" size="small" />元</div>
-          </a-flex>
-          <a-flex vertical style="margin-bottom: 10px">
-            <a-checkbox v-model:checked="activity_mt.new_customer_check"> 新用户 </a-checkbox>
-            <div my-2 ml-4>新用户立减:<a-input-number v-model:value="activity_mt.new_customer" :min="1" :max="10" size="small" />元</div>
-          </a-flex>
-          <a-flex vertical style="margin-bottom: 10px">
-            <a-checkbox v-model:checked="activity_mt.collect_check"> 收藏有礼 </a-checkbox>
-            <div my-2 ml-4>
-              <span px-2>满</span>
-              <a-input-number v-model:value="activity_mt.collect.reach" :min="1" :max="10" size="small" />元
-              <span px-2>减</span>
-              <a-input-number v-model:value="activity_mt.collect.reduced" :min="1" :max="10" size="small" />元
-            </div>
-          </a-flex>
-        </div>
-        <!-- 优惠券 -->
-        <div py-4  mr-40>
-          <a-flex vertical>
-            <a-checkbox v-model:checked="activity_mt.ticket_check">
-              店内领券
-              <a-tooltip>
-                <template #delivery-title>可设置顾客类型（新客、老客、全部）、券的发放数量、生效日期及指定时间段、券有效期</template>
-                <QuestionCircleOutlined />
-              </a-tooltip>
-            </a-checkbox>
-            <div my-2 ml-4 v-for="(maxout, i) in activity_mt.ticket_list" :key="i">
-              <span px-2>满</span>
-              <a-input-number v-model:value="maxout.reach" :min="1" :max="10" size="small" />元
-              <span px-2>减</span>
-              <a-input-number v-model:value="maxout.reduced" :min="1" :max="10" size="small" />元
-              <a-button type="text" size="small" danger @click="delMaxout('ticket', i)" v-if="i"><DeleteOutlined /></a-button>
-            </div>
-            <a-button type="primary" size="small" @click="addMaxout('ticket')">添加</a-button>
-          </a-flex>
-        </div>
-        <!-- 神券红包 -->
-        <div py-4>
-          <a-flex vertical style="margin-bottom: 10px">
-            <a-checkbox v-model:checked="activity_mt.swell_ticket_check"> 神券红包 </a-checkbox>
-            <div my-2 ml-4>商家承担:<a-input-number v-model:value="activity_mt.swell_ticket" :min="1" :max="10" size="small" />元</div>
+            <template v-if="item.value_type === 1">
+              <div my-2 ml-4 v-for="(maxout, i) in item.value" :key="i">
+                <span px-2>满</span>
+                <a-input-number v-model:value="maxout.reach" :min="1" :max="9999" size="small" />元
+                <span px-2>减</span>
+                <a-input-number v-model:value="maxout.reduced" :min="1" :max="9999" size="small" />元
+                <a-button type="text" size="small" danger @click="delMaxout(item, i)" v-if="i"><DeleteOutlined /></a-button>
+              </div>
+            </template>
+            <template v-else>
+              <div my-2 ml-4>商家立减: <a-input-number v-model:value="item.value[0].reduced" :min="1" :max="10" size="small" />元</div>
+            </template>
           </a-flex>
         </div>
       </a-flex>
@@ -132,6 +173,36 @@ const delMaxout = (type, index) => {
           饿了么
         </span>
       </template>
+      <a-flex>
+        <div py-4 mr-40 v-for="item in activity.ele" :key="item.key">
+          <a-flex vertical>
+            <div flex justify-between>
+              <a-checkbox v-model:checked="item.isCheck">
+                {{ item.name }}
+                <template v-if="!!item.tips">
+                  <a-tooltip>
+                    <template #delivery-title>{{ item.tips }}</template>
+                    <QuestionCircleOutlined />
+                  </a-tooltip>
+                </template>
+              </a-checkbox>
+              <a-button v-if="item.value_type === 1" type="primary" size="small" @click="addMaxout(item)">添加阶梯</a-button>
+            </div>
+            <template v-if="item.value_type === 1">
+              <div my-2 ml-4 v-for="(maxout, i) in item.value" :key="i">
+                <span px-2>满</span>
+                <a-input-number v-model:value="maxout.reach" :min="1" :max="10" size="small" />元
+                <span px-2>减</span>
+                <a-input-number v-model:value="maxout.reduced" :min="1" :max="10" size="small" />元
+                <a-button type="text" size="small" danger @click="delMaxout(item, i)" v-if="i"><DeleteOutlined /></a-button>
+              </div>
+            </template>
+            <template v-else>
+              <div my-2 ml-4>商家立减: <a-input-number v-model:value="item.value[0].reduced" :min="1" :max="10" size="small" />元</div>
+            </template>
+          </a-flex>
+        </div>
+      </a-flex>
     </a-tab-pane>
   </a-tabs>
   
