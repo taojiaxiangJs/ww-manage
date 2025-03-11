@@ -3,6 +3,7 @@ import { reactive, ref } from 'vue'
 import { message } from 'ant-design-vue'
 const [messageApi, contextHolder] = message.useMessage()
 import { DeleteOutlined, QuestionCircleOutlined } from '@ant-design/icons-vue'
+
 const activeKey = ref('mt')
 const activity = reactive({
   /**
@@ -110,6 +111,7 @@ initActivity('ele')  // 美团
 
 const activityData = defineModel()
 activityData.value.activity = activity
+debugger
 
 const addMaxout = (item) => {
   let list = item.value.filter((e) => !e.reach || !e.reduced)
@@ -136,8 +138,8 @@ const delMaxout = (item, index) => {
           美团
         </span>
       </template>
-      <a-flex>
-        <div py-4 mr-40 v-for="item in activity.mt" :key="item.key">
+      <a-flex wrap>
+        <div py-4 mr-30 v-for="item in activity.mt" :key="item.key">
           <a-flex vertical>
             <div flex justify-between>
               <a-checkbox v-model:checked="item.isCheck">
@@ -174,7 +176,7 @@ const delMaxout = (item, index) => {
         </span>
       </template>
       <a-flex>
-        <div py-4 mr-40 v-for="item in activity.ele" :key="item.key">
+        <div py-4 mr-30 v-for="item in activity.ele" :key="item.key">
           <a-flex vertical>
             <div flex justify-between>
               <a-checkbox v-model:checked="item.isCheck">

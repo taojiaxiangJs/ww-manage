@@ -23,7 +23,110 @@ const delivery = reactive({
         { min: 4, max: 5, fee: 30 },
         { min: 5, max: '∞', fee: 36 }
       ]
-    }]
+    }],
+    rules: {
+      amount: {
+        name: '佣金收费规则',
+        rule: [
+          {
+            baseFee: 0,
+            minFee: 1.38,    // 最低收费
+            min: 0,
+            rate: 0.064,  // 费率
+            size: 1,
+            max: null       // 最高收费
+          }
+        ]
+      },
+      distance: {
+        name: '距离收费',
+        rule: [
+          {
+            minFee: 0,
+            baseFee: 2.5,
+            min: 0,
+            rate: 0,
+            size: 1,
+            max: 3
+          },{
+            minFee: 0,
+            baseFee: 2.5,
+            min: 3,
+            rate: 0.15,
+            size: 0.1,
+            max: 4
+          },{
+            minFee: 0,
+            baseFee: 4,
+            min:4,
+            rate: 0.14,
+            size: 0.1,
+            max: null
+          }
+        ]
+      },
+      activity: {
+        name: '价格收费',
+        rule: [
+          {
+            minFee: 0,
+            baseFee: 0,
+            min: 0,
+            rate: 0,
+            size: 1,
+            max: 25
+          },{
+            minFee: 0,
+            baseFee: 0,
+            min: 25,
+            rate: 0.19,
+            size: 1,
+            max: 30
+          },{
+            minFee: 0,
+            baseFee: 0.95,
+            min: 30,
+            rate: 0.15,
+            size: 1,
+            max: null
+          }
+        ]
+      },
+      time: {
+        name: '时段收费',
+        rule: [
+          {
+            minFee: 0,
+            baseFee: 0,
+            min: '00:00',
+            rate: 0.8,
+            size: 1,
+            max: '02:00'
+          },{
+            minFee: 0,
+            baseFee: 0,
+            min: '02:00',
+            rate: 1,
+            size: 1,
+            max: '06:00'
+          },{
+            minFee: 0,
+            baseFee: 0,
+            min: '06:00',
+            rate: 0,
+            size: 1,
+            max: '21:00'
+          },{
+            minFee: 0,
+            baseFee: 0,
+            min: '21:00',
+            rate: 0.3,
+            size: 1,
+            max: '24:00'
+          }
+        ]
+      }
+    }
   },
   ele: {
     range: {
@@ -38,12 +141,87 @@ const delivery = reactive({
         { min: 3, max: 4, fee: 25 },
         { min: 4, max: '∞', fee: 40 }
       ]
-    }]
+    }],
+    rules: {
+      amount: {
+        name: '佣金收费规则',
+        rule: [
+          {
+            minFee: 1.38,    // 最低收费
+            baseFee: 0,
+            min: 0,
+            rate: 0.064,  // 费率
+            size: 1,
+            max: null       // 最高收费
+          }
+        ]
+      },
+      distance: {
+        name: '距离收费',
+        rule: [
+          {
+            minFee: 0,
+            baseFee: 2.55,
+            min: 0,
+            rate: 0,
+            size: 1,
+            max: 2.5
+          },{
+            minFee: 0,
+            baseFee: 2.55,
+            min: 2.5,
+            rate: 0.5,
+            size: 0.5,
+            max: 4
+          },{
+            minFee: 0,
+            baseFee: 4.05,
+            min: 4,
+            rate: 0.7,
+            size: 0.5,
+            max: null
+          }
+        ]
+      },
+      time: {
+        name: '时段收费',
+        rule: [
+          {
+            minFee: 0,
+            baseFee: 0,
+            min: '00:00',
+            rate: 1,
+            size: 1,
+            max: '03:00'
+          },{
+            minFee: 0,
+            baseFee: 0,
+            min: '03:00',
+            rate: 1.5,
+            size: 1,
+            max: '06:00'
+          },{
+            minFee: 0,
+            baseFee: 0,
+            min: '06:00',
+            rate: 0,
+            size: 1,
+            max: '21:00'
+          },{
+            baseFee: 0,
+            min: '21:00',
+            rate: 0.5,
+            size: 1,
+            max: '24:00'
+          }
+        ]
+      }
+    }
   }
 })
 
 const deliveryData = defineModel()
-deliveryData.value.delivery = delivery.value
+deliveryData.value.delivery = delivery
 
 const editDistanceRangeOpen = ref(false)
 const editDistanceRangeData = reactive({

@@ -9,19 +9,58 @@ const activeKey = ref('1')
 const activityData = reactive({})
 const deliveryData = reactive({})
 
+// 计算活动后的金额
 const countActivityFee = (amount, type)=> {
-  activityData[type].forEach(e=> {
-
-  })
+  const activity = [...activityData.activity[type]]
+  const checkedList = activity.filter(e=> e.isCheck)
+  const useOnce = checkedList.filter(e=> e.use_type)
+  const useMore = checkedList.filter(e=> !e.use_type)
+  const onceDerateFee = getDerateFee(useOnce, amount)
+  const moreDerateFee = getDerateFee(useMore, amount)
+  let max = amount
+  moreDerateFee.forEach(e=> { max = accSub(max, e.value) })
+  let min = max
+  onceDerateFee.forEach(e=> { min = accSub(min, e.value) })
+  return [min, max]
 }
+const getDerateFee = (list, amount)=> {
+  let res = []
+  list.forEach(e=> {
+    if(e.value_type === 0) {
+      res.push({value: e.value[0].reduced, label: e.name})
+    }else{
+      let list = e.value.sort((a,b)=> a.reach - b.reach)
+      let max = list.length-1;
+      while(max >= 0) {
+        if(amount >= list[max].reach) {
+          res.push({value: list[max].reduced, label: list[max].name})
+          max = -1
+        }else{
+          max--
+        }
+      }
+    }
+  })
+  return res
+}
+
 
 const type = ref('')
 const amount = ref('30')
-const count = (type)=> {
-  type.value = type
-  let activityList = countActivityFee(amount.value, type)
+
+// 计算最终价格
+const count = (t)=> {
+  type.value = t
+  let activityList = countActivityFee(amount.value, t)
+  const timeFee = []
   console.log(activityList);
 }
+
+
+
+
+
+
 const logFn = () => {
   console.log(JSON.parse(JSON.stringify(activityData)),JSON.parse(JSON.stringify(deliveryData)));
 }
