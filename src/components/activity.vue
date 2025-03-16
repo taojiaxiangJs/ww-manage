@@ -12,8 +12,8 @@ const activity = reactive({
    * use_type: 用户的使用次数类型  1: 仅1次  0：多次
    * value: 活动值
    *    reach： 满减金额
-   *    reduced： 减免金额 
-  */
+   *    reduced： 减免金额
+   */
   mt: [
     {
       key: 'maxout',
@@ -51,7 +51,7 @@ const activity = reactive({
       tips: '可设置顾客类型（新客、老客、全部）、券的发放数量、生效日期及指定时间段、券有效期',
       value_type: 1,
       use_type: 0,
-    }
+    },
   ],
   ele: [
     {
@@ -90,29 +90,79 @@ const activity = reactive({
       tips: '可设置顾客类型（新客、老客、全部）、券的发放数量、生效日期及指定时间段、券有效期',
       value_type: 1,
       use_type: 0,
-    }
-  ]
+    },
+  ],
 })
 
-const initActivity = (type)=> {
-  activity[type].forEach(e=> {
+const initActivity = (type) => {
+  activity[type].forEach((e) => {
     e.isCheck = true
-    e.value = [
-      {
-        reach: '',
-        reduced: '',
-      }
-    ]
+    if (e.key === 'maxout') {
+      e.value = [
+        {
+          reach: '20',
+          reduced: '3',
+        },
+        {
+          reach: '30',
+          reduced: '4',
+        },
+        {
+          reach: '40',
+          reduced: '6',
+        },
+      ]
+    } else if (e.key === 'delivery') {
+      e.value = [
+        {
+          reach: '0',
+          reduced: '3',
+        },
+      ]
+    } else if (e.key === 'customer') {
+      e.value = [
+        {
+          reach: '0',
+          reduced: '1',
+        },
+      ]
+    } else if (e.key === 'follow') {
+      e.value = [
+        {
+          reach: '0',
+          reduced: '1',
+        },
+      ]
+    } else if (e.key === 'surprise') {
+      e.value = [
+        {
+          reach: '0',
+          reduced: '5',
+        },
+      ]
+    } else if (e.key === 'ticket') {
+      e.value = [
+        {
+          reach: '20',
+          reduced: '1',
+        },
+        {
+          reach: '25',
+          reduced: '1.5',
+        },
+        {
+          reach: '30',
+          reduced: '2',
+        },
+      ]
+    }
   })
 }
-initActivity('mt')  // 美团
-initActivity('ele')  // 美团
-
+initActivity('mt') // 美团
+initActivity('ele') // 美团
 
 const activityData = defineModel()
 activityData.value.activity = activity
-debugger
-
 const addMaxout = (item) => {
   let list = item.value.filter((e) => !e.reach || !e.reduced)
   if (list.length) {
@@ -134,9 +184,7 @@ const delMaxout = (item, index) => {
   <a-tabs v-model:activeKey="activeKey">
     <a-tab-pane key="mt">
       <template #tab>
-        <span>
-          美团
-        </span>
+        <span> 美团 </span>
       </template>
       <a-flex wrap>
         <div py-4 mr-30 v-for="item in activity.mt" :key="item.key">
@@ -171,9 +219,7 @@ const delMaxout = (item, index) => {
     </a-tab-pane>
     <a-tab-pane key="ele">
       <template #tab>
-        <span>
-          饿了么
-        </span>
+        <span> 饿了么 </span>
       </template>
       <a-flex>
         <div py-4 mr-30 v-for="item in activity.ele" :key="item.key">
@@ -207,9 +253,6 @@ const delMaxout = (item, index) => {
       </a-flex>
     </a-tab-pane>
   </a-tabs>
-  
 </template>
 
-<style scoped lang="scss">
-
-</style>
+<style scoped lang="scss"></style>
