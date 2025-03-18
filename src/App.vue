@@ -31,7 +31,7 @@ const countActivityFee = (amount, type) => {
   })
   return {
     subsidy: [subsidy_min, subsidy_max],
-    discounts: [min, max]
+    discounts: [min, max],
   }
 }
 const getDerateFee = (list, amount) => {
@@ -55,18 +55,18 @@ const getDerateFee = (list, amount) => {
   return res
 }
 
-const amount = ref('50')     // 商品小计
-const countResult = ref([])  // 计算结果
-const subsidyList = ref([])  // 商家对顾客的活动补贴
-const discountsList = ref([])// 商品优惠后的价格
-const randerDiscountsList = ref([])// 商品优惠后的价格(页面渲染用)
-// 计算最终价格 
+const amount = ref('50') // 商品小计
+const countResult = ref([]) // 计算结果
+const subsidyList = ref([]) // 商家对顾客的活动补贴
+const discountsList = ref([]) // 商品优惠后的价格
+const randerDiscountsList = ref([]) // 商品优惠后的价格(页面渲染用)
+// 计算最终价格
 const count = (type) => {
   let { subsidy, discounts } = countActivityFee(amount.value, type)
   discountsList.value = discounts
   subsidyList.value = subsidy
   console.log(discounts, subsidy)
-
+  countResult.value = []
   let timesList = deliveryData?.delivery[type]?.rules?.time?.rule || []
   let distanceList = deliveryData?.delivery[type]?.rules?.distance?.rule || []
   let brokerageList = deliveryData?.delivery[type]?.rules?.brokerage?.rule || []
@@ -76,9 +76,9 @@ const count = (type) => {
     col.value = e
     col.rule = null
     let brokerage_sub = 0
-    if(brokerageList.length) {
+    if (brokerageList.length) {
       brokerageList.forEach((b) => {
-        if(Number(b.min) <= Number(e) && (!b.max || Number(b.max) >= Number(e))) {
+        if (Number(b.min) <= Number(e) && (!b.max || Number(b.max) >= Number(e))) {
           brokerage_sub = accAdd(accMul(accDiv(accSub(e, b.min), b.size), b.rate), b.baseFee)
         }
       })
@@ -88,20 +88,35 @@ const count = (type) => {
       timesList.forEach((t) => {
         let obj_t = {
           name: '时段',
-          value: `${t.min}-${t.max}`,
+          value: `${t.min} - ${t.max}`,
           rule: t,
           children: [],
         }
-        if(distanceList.length) {
-          distanceList.forEach((d) => {
+        if (distanceList.length) {
+          // distanceList.forEach((d) => {
+          //   let obj_d = {
+          //     name: '距离（KM）',
+          //     value: `${d.min} - ${d.max ? d.max : '∞'}`,
+          //     rule: d,
+          //     children: [
+          //       {
+          //         name: '预计收入',
+          //         value: getPrice(e, brokerage_sub, t, d, type),
+          //       },
+          //     ],
+          //   }
+          //   obj_t.children.push(obj_d)
+          // })
+          ;[1, 2, 3, 4, 5, 6, 7].forEach((d) => {
+            let distance_sub = getDistanceSub(d, distanceList)
             let obj_d = {
               name: '距离（KM）',
-              value: `${d.min}-${d.max}`,
+              value: d,
               rule: d,
               children: [
                 {
                   name: '预计收入',
-                  value: getPrice(e, brokerage_sub, t, d, type),
+                  value: getPrice(e, brokerage_sub, t, distance_sub),
                 },
               ],
             }
@@ -113,22 +128,25 @@ const count = (type) => {
     }
     countResult.value.push(col)
   })
-  console.log(JSON.parse(JSON.stringify(countResult.value)));
   randerDiscountsList.value = formatResult(countResult.value)
+  console.log(randerDiscountsList.value)
 }
 
-const getPrice = (money, brokerage_sub, time, distance, type) => {
-  let range = deliveryData?.delivery[type]?.range
+const getDistanceSub = (d, distanceList) => {
+  let sum = 0
+  distanceList.forEach((e) => {
+    if (e.min <= d && (d < e.max || !e.max)) {
+      sum = accAdd(accMul(accDiv(accSub(d, e.min), e.size), e.rate), e.baseFee)
+    }
+  })
+  return sum
+}
+
+const getPrice = (money, brokerage_sub, time, distance_sub) => {
   let t = Number(accAdd(accMul(time.rate, time.size), time.baseFee))
   let time_sub = t > time.minFee ? t : time.minFee
-  let d_min = Number(accAdd(accMul(accMul(distance.rate, distance.size), distance.min), distance.baseFee))
-  let d_max = distance.max ? Number(accAdd(accMul(accMul(distance.rate, distance.size), distance.max), distance.baseFee)) : null
-  let distance_sub_min = d_min > distance.minFee ? d_min : distance.minFee
-  let distance_sub_max = d_max ? (d_max > distance.minFee ? d_max : distance.minFee) : null
-  let subtotal_min = accSub(accSub(accSub(money, time_sub), brokerage_sub), distance_sub_min)
-  let subtotal_max = distance_sub_max ?accSub(accSub(accSub(money, time_sub), brokerage_sub), distance_sub_max) : '∞'
-  // console.log(money, time_sub, brokerage_sub, distance_sub_min, distance_sub_max, `${subtotal_min} - ${subtotal_max}`);
-  return `${subtotal_min} - ${subtotal_max}`
+  let subtotal = accSub(accSub(accSub(money, time_sub), brokerage_sub), distance_sub)
+  return subtotal
 }
 
 const formatResult = (result) => {
@@ -136,29 +154,29 @@ const formatResult = (result) => {
   const deep = (list, index) => {
     list.forEach((e) => {
       let obj = { value: e.value, name: e.name }
-      if(!arr[index] || !arr[index][e.name]) {
-        if(!arr[index]) {
+      if (!arr[index] || !arr[index][e.name]) {
+        if (!arr[index]) {
           arr[index] = {}
         }
         arr[index][e.name] = [obj]
-      }else{
+      } else {
         arr[index][e.name].push(obj)
       }
-      if(e.children && e.children.length) {
+      if (e.children && e.children.length) {
         deep(e.children, index)
       }
     })
   }
   result.forEach((e, index) => {
-    if(!arr[index] || !arr[index][e.name]) {
-      if(!arr[index]) {
+    if (!arr[index] || !arr[index][e.name]) {
+      if (!arr[index]) {
         arr[index] = {}
       }
       arr[index][e.name] = [{ value: e.value, name: e.name }]
-    }else{
+    } else {
       arr[index][e.name].push({ value: e.value, name: e.name })
     }
-    if(e.children && e.children.length) {
+    if (e.children && e.children.length) {
       deep(e.children, index)
     }
   })
@@ -180,15 +198,26 @@ const logFn = () => {
 
   <div p-4>
     <div flex pb-8>
-      <div>商品小计：<span text-red-500 font-semibold px-2>{{ amount }}</span>元</div>
-      <div ml-16 v-if="subsidyList.length">商家活动补贴：新顾客<span text-red-500 font-semibold px-2>{{ subsidyList[0] }}</span>元、老顾客<span text-red-500 font-semibold px-2>{{ subsidyList[1] }}</span>元</div>
-      <div ml-16 v-if="discountsList.length">商品优惠后金额：新顾客<span text-red-500 font-semibold px-2>{{ discountsList[0] }}</span>元、老顾客<span text-red-500 font-semibold px-2>{{ discountsList[1] }}</span>元</div>
+      <div>
+        商品小计：<span text-red-500 font-semibold px-2>{{ amount }}</span
+        >元
+      </div>
+      <div ml-16 v-if="subsidyList.length">
+        商家活动补贴：新顾客<span text-red-500 font-semibold px-2>{{ subsidyList[0] }}</span
+        >元、老顾客<span text-red-500 font-semibold px-2>{{ subsidyList[1] }}</span
+        >元
+      </div>
+      <div ml-16 v-if="discountsList.length">
+        商品优惠后金额：新顾客<span text-red-500 font-semibold px-2>{{ discountsList[0] }}</span
+        >元、老顾客<span text-red-500 font-semibold px-2>{{ discountsList[1] }}</span
+        >元
+      </div>
     </div>
     <div>试算结果：</div>
-    <div v-for="(item, index) in randerDiscountsList" :key="index" mt-6 border border-solid border-indigo-600>
+    <div v-for="(item, index) in randerDiscountsList" :key="index" mt-6 border border-solid border-gray-400>
       <div v-for="(list, k) in item" :key="k" flex>
-        <div w-60 p-2 border border-solid border-indigo-600 text-center>{{ k }}</div>
-        <div v-for="(e, j) in list" :key="j" flex-1 text-center p-2 border border-solid border-indigo-600>{{ e.value }}</div>
+        <div w-60 p-2 border border-solid border-gray-400 text-center>{{ k }}</div>
+        <div v-for="(e, j) in list" :key="j" flex-1 text-center p-2 border border-solid border-gray-400>{{ e.value }}</div>
       </div>
     </div>
   </div>
