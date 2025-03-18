@@ -44,36 +44,68 @@
   }
   /**
   * 乘法
-  * @param arg1
-  * @param arg2
+  * @param a
+  * @param b
   * @returns
   */
-  export const accMul = (arg1, arg2)=> {
-    var r1 = arg1.toString(), // 将传入的数据转化为字符串
-    r2 = arg2.toString(),
-    m, resultVal, d = arguments[2];
-    m = (r1.split(".")[1] ? r1.split(".")[1].length : 0) + (r2.split(".")[1] ? r2.split(".")[1].length : 0); // 获取两个数字的小数位数的和
-    // 乘积的算法就是去掉小数点做整数相乘然后除去10的所有小数位的次方
-    resultVal = Number(r1.replace(".", "")) * Number(r2.replace(".", "")) / Math.pow(10, m);
-
-    return typeof d !== "number" ? Number(resultVal) : Number(resultVal.toFixed(parseInt(d)));
-  }
+  export const accMul = (a, b)=> {
+    // 将数字转换为字符串以分析小数位数
+    const strA = a.toString();
+    const strB = b.toString();
+    
+    // 获取小数点后的位数
+    const decimalPlacesA = strA.includes('.') ? strA.split('.')[1].length : 0;
+    const decimalPlacesB = strB.includes('.') ? strB.split('.')[1].length : 0;
+    
+    // 计算总的小数位数
+    const totalDecimals = decimalPlacesA + decimalPlacesB;
+    
+    // 将数字转换为整数进行计算
+    const factor = Math.pow(10, Math.max(decimalPlacesA, decimalPlacesB));
+    const numA = Math.round(a * factor);
+    const numB = Math.round(b * factor);
+    
+    // 执行乘法并调整结果
+    const result = (numA * numB) / (factor * factor);
+    
+    // 返回固定精度的结果，避免浮点误差
+    return Number(result.toFixed(totalDecimals));
+}
   /**
    * 除法
-   * @param arg1
-   * @param arg2
+   * @param a
+   * @param b
    * @returns {Number}
    */
-  export const accDiv = (arg1, arg2)=> {
-    let e = 0
-    let f = 0
-    try {
-      e = arg1.toString().split('.')[1].length
-    } catch (g) {}
-    try {
-      f = arg2.toString().split('.')[1].length
-    } catch (g) {}
-    const c = Number(arg1.toString().replace('.', ''))
-    const d = Number(arg2.toString().replace('.', ''))
-    return accMul(c / d, Math.pow(10, f - e))
-  }
+  export const accDiv = (a, b)=> {
+    // 检查除数是否为0
+    if (b === 0) {
+        throw new Error('除数不能为0');
+    }
+    
+    // 将数字转换为字符串以分析小数位数
+    const strA = a.toString();
+    const strB = b.toString();
+    
+    // 获取小数点后的位数
+    const decimalPlacesA = strA.includes('.') ? strA.split('.')[1].length : 0;
+    const decimalPlacesB = strB.includes('.') ? strB.split('.')[1].length : 0;
+    
+    // 计算需要放大的倍数
+    const maxDecimals = Math.max(decimalPlacesA, decimalPlacesB);
+    const factor = Math.pow(10, maxDecimals);
+    
+    // 将数字转换为整数进行计算
+    const numA = Math.round(a * factor);
+    const numB = Math.round(b * factor);
+    
+    // 执行除法
+    const result = numA / numB;
+    
+    // 计算结果应该保留的小数位数
+    // 这里我们取一个合理的最大精度（比如15位），避免无限小数
+    const precision = Math.min(15, decimalPlacesA + 6);
+    
+    // 返回固定精度的结果
+    return Number(result.toFixed(precision));
+}

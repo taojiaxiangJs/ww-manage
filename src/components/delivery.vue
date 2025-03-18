@@ -65,7 +65,7 @@ const delivery = reactive({
           }
         ]
       },
-      activity: {
+      brokerage: {
         name: '价格收费',
         rule: [
           {
