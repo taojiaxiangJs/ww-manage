@@ -184,6 +184,7 @@ const logFn = () => {
       <div ml-16 v-if="subsidyList.length">商家活动补贴：新顾客<span text-red-500 font-semibold px-2>{{ subsidyList[0] }}</span>元、老顾客<span text-red-500 font-semibold px-2>{{ subsidyList[1] }}</span>元</div>
       <div ml-16 v-if="discountsList.length">商品优惠后金额：新顾客<span text-red-500 font-semibold px-2>{{ discountsList[0] }}</span>元、老顾客<span text-red-500 font-semibold px-2>{{ discountsList[1] }}</span>元</div>
     </div>
+    <div>试算结果：</div>
     <div v-for="(item, index) in randerDiscountsList" :key="index" mt-6 border border-solid border-indigo-600>
       <div v-for="(list, k) in item" :key="k" flex>
         <div w-60 p-2 border border-solid border-indigo-600 text-center>{{ k }}</div>
