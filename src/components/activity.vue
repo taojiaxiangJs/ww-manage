@@ -81,7 +81,7 @@ const activity = reactive({
     {
       key: 'surprise',
       name: '神券红包',
-      value_type: 1,
+      value_type: 0,
       use_type: 0,
     },
     {
@@ -204,14 +204,14 @@ const delMaxout = (item, index) => {
             <template v-if="item.value_type === 1">
               <div my-2 ml-4 v-for="(maxout, i) in item.value" :key="i">
                 <span px-2>满</span>
-                <a-input-number v-model:value="maxout.reach" :min="1" :max="9999" size="small" />元
+                <a-input-number v-model:value="maxout.reach" :min="0" :max="9999" size="small" style="width: 70px;"/>元
                 <span px-2>减</span>
-                <a-input-number v-model:value="maxout.reduced" :min="1" :max="9999" size="small" />元
+                <a-input-number v-model:value="maxout.reduced" :min="0" :max="9999" size="small" style="width: 70px;"/>元
                 <a-button type="text" size="small" danger @click="delMaxout(item, i)" v-if="i"><DeleteOutlined /></a-button>
               </div>
             </template>
             <template v-else>
-              <div my-2 ml-4>商家立减: <a-input-number v-model:value="item.value[0].reduced" :min="1" :max="10" size="small" />元</div>
+              <div my-2 ml-4>商家立减: <a-input-number v-model:value="item.value[0].reduced" :min="0" :max="9999" size="small" style="width: 70px;"/>元</div>
             </template>
           </a-flex>
         </div>
@@ -239,14 +239,14 @@ const delMaxout = (item, index) => {
             <template v-if="item.value_type === 1">
               <div my-2 ml-4 v-for="(maxout, i) in item.value" :key="i">
                 <span px-2>满</span>
-                <a-input-number v-model:value="maxout.reach" :min="1" :max="10" size="small" />元
+                <a-input-number v-model:value="maxout.reach" :min="0" :max="9999" size="small" style="width: 70px;"/>元
                 <span px-2>减</span>
-                <a-input-number v-model:value="maxout.reduced" :min="1" :max="10" size="small" />元
+                <a-input-number v-model:value="maxout.reduced" :min="0" :max="9999" size="small" style="width: 70px;"/>元
                 <a-button type="text" size="small" danger @click="delMaxout(item, i)" v-if="i"><DeleteOutlined /></a-button>
               </div>
             </template>
             <template v-else>
-              <div my-2 ml-4>商家立减: <a-input-number v-model:value="item.value[0].reduced" :min="1" :max="10" size="small" />元</div>
+              <div my-2 ml-4>商家立减: <a-input-number v-model:value="item.value[0].reduced" :min="0" :max="9999" size="small" style="width: 70px;"/>元</div>
             </template>
           </a-flex>
         </div>

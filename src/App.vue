@@ -4,7 +4,15 @@ import activityComponent from './components/activity.vue'
 import deliveryComponent from './components/delivery.vue'
 import foodsComponent from './components/foods.vue'
 import { accAdd, accSub, accMul, accDiv } from '@/utils/utils'
-const activeKey = ref('1')
+const activeKey = ref(['1', '2'])
+
+const openDrawer = ref(false);
+const showDrawer = () => {
+  openDrawer.value = true;
+};
+const onClose = () => {
+  openDrawer.value = false;
+}
 
 const activityData = reactive({})
 const deliveryData = reactive({})
@@ -191,6 +199,12 @@ const logFn = () => {
 
 <template>
   <a-space wrap>
+    <a-button type="primary" size="small" @click="showDrawer()">选择商品</a-button>
+  </a-space>
+  <div p-4 mt-4>
+
+  </div>
+  <a-space wrap>
     <a-button type="primary" size="small" @click="logFn()">打印</a-button>
     <a-button type="primary" size="small" @click="count('mt')">美团试算</a-button>
     <a-button type="primary" size="small" @click="count('ele')">饿了么试算</a-button>
@@ -222,11 +236,6 @@ const logFn = () => {
     </div>
   </div>
   <a-collapse v-model:activeKey="activeKey" :bordered="false" style="background: rgb(255, 255, 255)">
-    <a-collapse-panel key="3" header="基础商品" style="background: #f7f7f7; border-radius: 4px; margin-bottom: 24px; border: 0; overflow: hidden">
-      <foodsComponent></foodsComponent>
-    </a-collapse-panel>
-  </a-collapse>
-  <a-collapse v-model:activeKey="activeKey" :bordered="false" style="background: rgb(255, 255, 255)">
     <a-collapse-panel key="1" header="我的活动" style="background: #f7f7f7; border-radius: 4px; margin-bottom: 24px; border: 0; overflow: hidden">
       <activityComponent v-model="activityData"></activityComponent>
     </a-collapse-panel>
@@ -236,6 +245,13 @@ const logFn = () => {
       <deliveryComponent v-model="deliveryData"></deliveryComponent>
     </a-collapse-panel>
   </a-collapse>
+  <a-drawer :height="1000" title="基础商品" placement="bottom" :open="openDrawer" @close="onClose">
+    <template #extra>
+      <a-button style="margin-right: 8px" @click="onClose">取消</a-button>
+      <a-button type="primary" @click="onClose">确定</a-button>
+    </template>
+    <foodsComponent></foodsComponent>
+  </a-drawer>
 </template>
 
 <style scoped lang="scss"></style>

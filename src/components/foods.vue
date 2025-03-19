@@ -515,7 +515,7 @@ const handleEditCancel = () => {
       <span ml-2>基础饭团</span>
     </div>
     <div flex flex-wrap ml-4>
-      <a-card v-for="(item, index) in base_foods.ft_list" :key="index" hoverable  style="width: 280px; margin-right: 10px; margin-bottom: 20px;">
+      <a-card v-for="(item, index) in base_foods.ft_list" :key="index" hoverable  style="width: 280px; margin-right: 10px; margin-bottom: 20px;" :style="{ 'border-color': item.check ? '#EE7E63' : '#f0f0f0', background: item.check ? '#FFF4F2' : '#fcfcfc'}">
         <template #actions>
           <span @click="handleStatus('ft_list', item, index)">{{ item.status ? '下架' : '上架'}}</span>
           <span @click="handleEdit('ft_list', item, index)">编辑</span>
@@ -523,7 +523,7 @@ const handleEditCancel = () => {
         </template>
         <a-card-meta :title="item.name" :class="{disabled: item.status === 0, 'check-box': item.show_check}" @click="item.check = !item.check">
           <template #avatar>
-            <a-avatar :class="{ 'check-avatar': item.check}" :src="item.image || 'https://os.alipayobjects.com/rmsportal/QBnOOoLaAfKPirc.png'" />
+            <a-avatar :src="item.image || 'https://os.alipayobjects.com/rmsportal/QBnOOoLaAfKPirc.png'" />
           </template>
           <template #description>
             <div flex justify-between>
@@ -532,7 +532,8 @@ const handleEditCancel = () => {
             </div>
             <div>{{ item.description }}</div>
             <div class="check-icon" v-if="item.show_check" :class="{check: item.check}">
-              <CheckOutlined style="font-size: 20px;" :style="{color: item.check ? '#389e0d' : '#fff'}" />
+              <!-- <CheckOutlined style="font-size: 20px;" :style="{color: item.check ? '#389e0d' : '#fff'}" /> -->
+              <image class="" src="../assets/check.png"></image>
             </div>
           </template>
         </a-card-meta>
@@ -543,7 +544,7 @@ const handleEditCancel = () => {
       <span ml-2>基础加料</span>
     </div>
     <div flex flex-wrap ml-4>
-      <a-card v-for="(item, index) in base_foods.xl_list" :key="index" hoverable  style="width: 280px; margin-right: 10px; margin-bottom: 20px;">
+      <a-card v-for="(item, index) in base_foods.xl_list" :key="index" hoverable  style="width: 280px; margin-right: 10px; margin-bottom: 20px;" :style="{ 'border-color': item.check ? '#EE7E63' : '#f0f0f0', background: item.check ? '#FFF4F2' : '#fcfcfc'}">
         <template #actions>
           <span @click="handleStatus('xl_list', item, index)">{{ item.status ? '下架' : '上架'}}</span>
           <span @click="handleEdit('xl_list', item, index)">编辑</span>
@@ -551,7 +552,7 @@ const handleEditCancel = () => {
         </template>
         <a-card-meta :title="item.name" :class="{disabled: item.status === 0, 'check-box': item.show_check}" @click="item.check = !item.check">
           <template #avatar>
-            <a-avatar :class="{ 'check-avatar': item.check}" :src="item.image || 'https://os.alipayobjects.com/rmsportal/QBnOOoLaAfKPirc.png'" />
+            <a-avatar :src="item.image || 'https://os.alipayobjects.com/rmsportal/QBnOOoLaAfKPirc.png'" />
           </template>
           <template #description>
             <div flex justify-between>
@@ -560,7 +561,8 @@ const handleEditCancel = () => {
             </div>
             <div>{{ item.description }}</div>
             <div class="check-icon" v-if="item.show_check" :class="{check: item.check}">
-              <CheckOutlined style="font-size: 20px;" :style="{color: item.check ? '#389e0d' : '#fff'}" />
+              <!-- <CheckOutlined style="font-size: 20px;" :style="{color: item.check ? '#389e0d' : '#fff'}" /> -->
+              <image class="" src="../assets/check.png"></image>
             </div>
           </template>
         </a-card-meta>
@@ -571,7 +573,7 @@ const handleEditCancel = () => {
       <span ml-2>现磨豆浆</span>
     </div>
     <div flex flex-wrap ml-4>
-      <a-card v-for="(item, index) in base_foods.dj_list" :key="index" hoverable  style="width: 280px; margin-right: 10px; margin-bottom: 20px;">
+      <a-card v-for="(item, index) in base_foods.dj_list" :key="index" hoverable  style="width: 280px; margin-right: 10px; margin-bottom: 20px;" :style="{ 'border-color': item.check ? '#EE7E63' : '#f0f0f0', background: item.check ? '#FFF4F2' : '#fcfcfc'}">
         <template #actions>
           <span @click="handleStatus('dj_list', item, index)">{{ item.status ? '下架' : '上架'}}</span>
           <span @click="handleEdit('dj_list', item, index)">编辑</span>
@@ -579,7 +581,7 @@ const handleEditCancel = () => {
         </template>
         <a-card-meta :title="item.name" :class="{disabled: item.status === 0, 'check-box': item.show_check}" @click="item.check = !item.check">
           <template #avatar>
-            <a-avatar :class="{ 'check-avatar': item.check}" :src="item.image || 'https://os.alipayobjects.com/rmsportal/QBnOOoLaAfKPirc.png'" />
+            <a-avatar :src="item.image || 'https://os.alipayobjects.com/rmsportal/QBnOOoLaAfKPirc.png'" />
           </template>
           <template #description>
             <div flex justify-between>
@@ -588,7 +590,8 @@ const handleEditCancel = () => {
             </div>
             <div>{{ item.description }}</div>
             <div class="check-icon" v-if="item.show_check" :class="{check: item.check}">
-              <CheckOutlined style="font-size: 20px;" :style="{color: item.check ? '#389e0d' : '#fff'}" />
+              <!-- <CheckOutlined style="font-size: 20px;" :style="{color: item.check ? '#389e0d' : '#fff'}" /> -->
+              <image class="" src="../assets/check.png"></image>
             </div>
           </template>
         </a-card-meta>
@@ -624,7 +627,7 @@ const handleEditCancel = () => {
   opacity: 0.3;
 }
 .check-avatar{
-  border: 3px solid #b7eb8f;
+  border: 3px solid #EE7E63;
 }
 .check-box{
   position: relative;
@@ -634,15 +637,15 @@ const handleEditCancel = () => {
     right: 0;
     width: 30px;
     height: 30px;
-    background: #eee;
-    border-radius: 0 8px 0 0;
+    // background: #eee;
+    // border-radius: 0 8px 0 0;
     display: flex;
     justify-content: center;
     align-items: center;
   }
-  .check{
-    background: #b7eb8f;
-  }
+  // .check{
+  //   background: #b7eb8f;
+  // }
 }
 ::v-deep(.ant-card-body) {
   padding: 0;
