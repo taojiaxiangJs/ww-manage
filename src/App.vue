@@ -13,7 +13,20 @@ const showDrawer = () => {
 const onClose = () => {
   openDrawer.value = false;
 }
+const onCheckFoods = () => {
+  console.log('checkedFoodsList.value', checkedFoodsList.value.checkedFoods);
+  let total_online = 0
+  let total_offline = 0
+  checkedFoodsList.value.checkedFoods.forEach((e) => {
+    total_online = accAdd(total, e.online_price)
+    total_offline = accAdd(total, e.offline_price)
+  })
+  openDrawer.value = false;
+  amount.value = total_online
+  amount_offline.value = total_offline
+}
 
+const checkedFoodsList = ref([])
 const activityData = reactive({})
 const deliveryData = reactive({})
 
@@ -63,7 +76,8 @@ const getDerateFee = (list, amount) => {
   return res
 }
 
-const amount = ref('50') // 商品小计
+const amount = ref('0') // 商品小计
+const amount_offline = ref('0') // 商品小计
 const countResult = ref([]) // 计算结果
 const subsidyList = ref([]) // 商家对顾客的活动补贴
 const discountsList = ref([]) // 商品优惠后的价格
@@ -198,43 +212,59 @@ const logFn = () => {
 </script>
 
 <template>
-  <a-space wrap>
+  <div mb-4>
     <a-button type="primary" size="small" @click="showDrawer()">选择商品</a-button>
-  </a-space>
-  <div p-4 mt-4>
-
   </div>
-  <a-space wrap>
-    <a-button type="primary" size="small" @click="logFn()">打印</a-button>
-    <a-button type="primary" size="small" @click="count('mt')">美团试算</a-button>
-    <a-button type="primary" size="small" @click="count('ele')">饿了么试算</a-button>
-  </a-space>
-
-  <div p-4>
-    <div flex pb-8>
-      <div>
-        商品小计：<span text-red-500 font-semibold px-2>{{ amount }}</span
-        >元
+  <template v-if="checkedFoodsList?.checkedFoods?.length">
+    <div p-4 mt-4>
+      <a-space wrap>
+        <a-card v-for="(item, index) in checkedFoodsList.checkedFoods" :key="index" hoverable  style="width: 280px; margin-right: 10px; margin-bottom: 20px;">
+          <a-card-meta :title="item.name">
+            <template #avatar>
+              <a-avatar :src="item.image || 'https://os.alipayobjects.com/rmsportal/QBnOOoLaAfKPirc.png'" />
+            </template>
+            <template #description>
+              <div flex justify-between>
+                <div>线下: <span text-gray-600>{{ item.offline_price }}</span> 元</div>
+                <div>线上: <span text-gray-600>{{ item.online_price }}</span> 元</div>
+              </div>
+            </template>
+          </a-card-meta>
+        </a-card>
+      </a-space>
+      
+    </div>
+    <a-space wrap>
+      <a-button type="primary" size="small" @click="logFn()">打印</a-button>
+      <a-button type="primary" size="small" @click="count('mt')">美团试算</a-button>
+      <a-button type="primary" size="small" @click="count('ele')">饿了么试算</a-button>
+    </a-space>
+    <div p-4>
+      <div flex pb-8>
+        <div>
+          商品小计：<span text-red-500 font-semibold px-2>{{ amount }}</span
+          >元
+        </div>
+        <div ml-16 v-if="subsidyList.length">
+          商家活动补贴：新顾客<span text-red-500 font-semibold px-2>{{ subsidyList[0] }}</span
+          >元、老顾客<span text-red-500 font-semibold px-2>{{ subsidyList[1] }}</span
+          >元
+        </div>
+        <div ml-16 v-if="discountsList.length">
+          商品优惠后金额：新顾客<span text-red-500 font-semibold px-2>{{ discountsList[0] }}</span
+          >元、老顾客<span text-red-500 font-semibold px-2>{{ discountsList[1] }}</span
+          >元
+        </div>
       </div>
-      <div ml-16 v-if="subsidyList.length">
-        商家活动补贴：新顾客<span text-red-500 font-semibold px-2>{{ subsidyList[0] }}</span
-        >元、老顾客<span text-red-500 font-semibold px-2>{{ subsidyList[1] }}</span
-        >元
-      </div>
-      <div ml-16 v-if="discountsList.length">
-        商品优惠后金额：新顾客<span text-red-500 font-semibold px-2>{{ discountsList[0] }}</span
-        >元、老顾客<span text-red-500 font-semibold px-2>{{ discountsList[1] }}</span
-        >元
+      <div>试算结果：</div>
+      <div v-for="(item, index) in randerDiscountsList" :key="index" mt-6 border border-solid border-gray-400>
+        <div v-for="(list, k) in item" :key="k" flex>
+          <div w-60 p-2 border border-solid border-gray-400 text-center>{{ k }}</div>
+          <div v-for="(e, j) in list" :key="j" flex-1 text-center p-2 border border-solid border-gray-400>{{ e.value }}</div>
+        </div>
       </div>
     </div>
-    <div>试算结果：</div>
-    <div v-for="(item, index) in randerDiscountsList" :key="index" mt-6 border border-solid border-gray-400>
-      <div v-for="(list, k) in item" :key="k" flex>
-        <div w-60 p-2 border border-solid border-gray-400 text-center>{{ k }}</div>
-        <div v-for="(e, j) in list" :key="j" flex-1 text-center p-2 border border-solid border-gray-400>{{ e.value }}</div>
-      </div>
-    </div>
-  </div>
+  </template>
   <a-collapse v-model:activeKey="activeKey" :bordered="false" style="background: rgb(255, 255, 255)">
     <a-collapse-panel key="1" header="我的活动" style="background: #f7f7f7; border-radius: 4px; margin-bottom: 24px; border: 0; overflow: hidden">
       <activityComponent v-model="activityData"></activityComponent>
@@ -248,9 +278,9 @@ const logFn = () => {
   <a-drawer :height="1000" title="基础商品" placement="bottom" :open="openDrawer" @close="onClose">
     <template #extra>
       <a-button style="margin-right: 8px" @click="onClose">取消</a-button>
-      <a-button type="primary" @click="onClose">确定</a-button>
+      <a-button type="primary" @click="onCheckFoods">确定</a-button>
     </template>
-    <foodsComponent></foodsComponent>
+    <foodsComponent v-if="openDrawer" isCheck v-model="checkedFoodsList"></foodsComponent>
   </a-drawer>
 </template>
 

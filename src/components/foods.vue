@@ -1,10 +1,10 @@
 <script setup>
-import { ref, reactive, h } from 'vue'
-import { CheckOutlined, ExclamationCircleOutlined } from '@ant-design/icons-vue'
+import { ref, reactive, h, onMounted  } from 'vue'
+import { ExclamationCircleOutlined } from '@ant-design/icons-vue'
 import { message, Modal } from 'ant-design-vue';
 const [modal, contextHolder] = Modal.useModal();
 
-const base_foods = ref({
+const base_foods = reactive({
   ft_list: [
     {
       // name: '基础饭团',
@@ -15,7 +15,7 @@ const base_foods = ref({
       index: 0,
       description: '人见人夸、狗见狗爱',
       image: '',
-      id: '',  // id
+      id: '0',  // id
       associated_ids: [],  // 父类id
       status: 1,  // 0:下架 1:上架
       check: false,  // 是否选中
@@ -31,7 +31,7 @@ const base_foods = ref({
       index: 0,
       description: '',
       image: '',
-      id: '',  // id
+      id: '00',  // id
       associated_ids: [],  // 父类id
       status: 1,  // 0:下架 1:上架
       check: false,  // 是否选中
@@ -45,7 +45,7 @@ const base_foods = ref({
       index: 1,
       description: '',
       image: '',
-      id: '',  // id
+      id: '01',  // id
       associated_ids: [],  // 父类id
       status: 1,  // 0:下架 1:上架
       check: false,  // 是否选中
@@ -59,7 +59,7 @@ const base_foods = ref({
       index: 2,
       description: '',
       image: '',
-      id: '',  // id
+      id: '02',  // id
       associated_ids: [],  // 父类id
       status: 1,  // 0:下架 1:上架
       check: false,  // 是否选中
@@ -73,7 +73,7 @@ const base_foods = ref({
       index: 3,
       description: '',
       image: '',
-      id: '',  // id
+      id: '03',  // id
       associated_ids: [],  // 父类id
       status: 1,  // 0:下架 1:上架
       check: false,  // 是否选中
@@ -87,7 +87,7 @@ const base_foods = ref({
       index: 4,
       description: '',
       image: '',
-      id: '',  // id
+      id: '04',  // id
       associated_ids: [],  // 父类id
       status: 1,  // 0:下架 1:上架
       check: false,  // 是否选中
@@ -101,7 +101,7 @@ const base_foods = ref({
       index: 5,
       description: '',
       image: '',
-      id: '',  // id
+      id: '05',  // id
       associated_ids: [],  // 父类id
       status: 1,  // 0:下架 1:上架
       check: false,  // 是否选中
@@ -115,7 +115,7 @@ const base_foods = ref({
       index: 6,
       description: '',
       image: '',
-      id: '',  // id
+      id: '06',  // id
       associated_ids: [],  // 父类id
       status: 1,  // 0:下架 1:上架
       check: false,  // 是否选中
@@ -129,7 +129,7 @@ const base_foods = ref({
       index: 7,
       description: '',
       image: '',
-      id: '',  // id
+      id: '07',  // id
       associated_ids: [],  // 父类id
       status: 1,  // 0:下架 1:上架
       check: false,  // 是否选中
@@ -143,7 +143,7 @@ const base_foods = ref({
       index: 8,
       description: '',
       image: '',
-      id: '',  // id
+      id: '08',  // id
       associated_ids: [],  // 父类id
       status: 1,  // 0:下架 1:上架
       check: false,  // 是否选中
@@ -157,7 +157,7 @@ const base_foods = ref({
       index: 9,
       description: '',
       image: '',
-      id: '',  // id
+      id: '09',  // id
       associated_ids: [],  // 父类id
       status: 1,  // 0:下架 1:上架
       check: false,  // 是否选中
@@ -171,7 +171,7 @@ const base_foods = ref({
       index: 10,
       description: '',
       image: '',
-      id: '',  // id
+      id: '010',  // id
       associated_ids: [],  // 父类id
       status: 1,  // 0:下架 1:上架
       check: false,  // 是否选中
@@ -185,7 +185,7 @@ const base_foods = ref({
       index: 11,
       description: '',
       image: '',
-      id: '',  // id
+      id: '011',  // id
       associated_ids: [],  // 父类id
       status: 1,  // 0:下架 1:上架
       check: false,  // 是否选中
@@ -199,7 +199,7 @@ const base_foods = ref({
       index: 12,
       description: '',
       image: '',
-      id: '',  // id
+      id: '012',  // id
       associated_ids: [],  // 父类id
       status: 1,  // 0:下架 1:上架
       check: false,  // 是否选中
@@ -213,7 +213,7 @@ const base_foods = ref({
       index: 13,
       description: '',
       image: '',
-      id: '',  // id
+      id: '013',  // id
       associated_ids: [],  // 父类id
       status: 1,  // 0:下架 1:上架
       check: false,  // 是否选中
@@ -227,7 +227,7 @@ const base_foods = ref({
       index: 14,
       description: '',
       image: '',
-      id: '',  // id
+      id: '014',  // id
       associated_ids: [],  // 父类id
       status: 1,  // 0:下架 1:上架
       check: false,  // 是否选中
@@ -241,7 +241,7 @@ const base_foods = ref({
       index: 15,
       description: '',
       image: '',
-      id: '',  // id
+      id: '015',  // id
       associated_ids: [],  // 父类id
       status: 1,  // 0:下架 1:上架
       check: false,  // 是否选中
@@ -255,7 +255,7 @@ const base_foods = ref({
       index: 16,
       description: '',
       image: '',
-      id: '',  // id
+      id: '016',  // id
       associated_ids: [],  // 父类id
       status: 1,  // 0:下架 1:上架
       check: false,  // 是否选中
@@ -269,7 +269,7 @@ const base_foods = ref({
       index: 17,
       description: '',
       image: '',
-      id: '',  // id
+      id: '017',  // id
       associated_ids: [],  // 父类id
       status: 1,  // 0:下架 1:上架
       check: false,  // 是否选中
@@ -285,7 +285,7 @@ const base_foods = ref({
       index: 0,
       description: '',
       image: '',
-      id: '',  // id
+      id: '000',  // id
       associated_ids: [],  // 父类id
       status: 1,  // 0:下架 1:上架
       check: false,  // 是否选中
@@ -299,7 +299,7 @@ const base_foods = ref({
       index: 1,
       description: '',
       image: '',
-      id: '',  // id
+      id: '001',  // id
       associated_ids: [],  // 父类id
       status: 0,  // 0:下架 1:上架
       check: false,  // 是否选中
@@ -313,7 +313,7 @@ const base_foods = ref({
       index: 2,
       description: '',
       image: '',
-      id: '',  // id
+      id: '002',  // id
       associated_ids: [],  // 父类id
       status: 1,  // 0:下架 1:上架
       check: false,  // 是否选中
@@ -327,7 +327,7 @@ const base_foods = ref({
       index: 3,
       description: '',
       image: '',
-      id: '',  // id
+      id: '003',  // id
       associated_ids: [],  // 父类id
       status: 1,  // 0:下架 1:上架
       check: false,  // 是否选中
@@ -341,7 +341,7 @@ const base_foods = ref({
       index: 4,
       description: '',
       image: '',
-      id: '',  // id
+      id: '004',  // id
       associated_ids: [],  // 父类id
       status: 1,  // 0:下架 1:上架
       check: false,  // 是否选中
@@ -355,7 +355,7 @@ const base_foods = ref({
       index: 5,
       description: '',
       image: '',
-      id: '',  // id
+      id: '005',  // id
       associated_ids: ['1'],  // 被关联的商品id集合
       status: 1,  // 0:下架 1:上架
       check: false,  // 是否选中
@@ -400,7 +400,7 @@ const handleStatus = (type, item, index) => {
       cancelText: '取消',
       content,
       onOk() {
-        base_foods.value[type][index].status = 0
+        base_foods[type][index].status = 0
         if(names.length) {
           sku_list.value.forEach(i=> {
             if(associated_ids.includes(i.id)) {
@@ -420,7 +420,7 @@ const handleStatus = (type, item, index) => {
       cancelText: '取消',
       content: h('div', {style: 'font-size: 20px;padding: 10px 0;'}, `确定上架该商品么?`),
       onOk() {
-        base_foods.value[type][index].status = 1
+        base_foods[type][index].status = 1
       },
       onCancel() {},
       class: 'test',
@@ -447,7 +447,7 @@ const handleDelete = (type, item, index) => {
       cancelText: '取消',
       content: h('div', {style: 'font-size: 20px;padding: 10px 0;'}, `确定删除该该商品?`),
       onOk() {
-        base_foods.value[type].splice(index, 1)
+        base_foods[type].splice(index, 1)
       },
       onCancel() {},
       class: 'test',
@@ -498,13 +498,36 @@ const handleEditOk = () => {
       editData.data.online_price = formState.online_price
       editData.data.offline_price = formState.offline_price
       editData.data.description = formState.description
-      base_foods.value[editData.type][editData.index] = editData.data
+      base_foods[editData.type][editData.index] = editData.data
       handleEditCancel()
     })
 }
 const handleEditCancel = () => {
   formRef.value.resetFields();
   editModalOpen.value = false
+}
+
+const props = defineProps(['isCheck'])
+onMounted(() => {
+  if(typeof props.isCheck !== 'undefined') {
+    for(let key in base_foods) {
+      base_foods[key].forEach(item => {
+        item.show_check = !!item.status
+      })
+    }
+  }
+})
+const checkedFoodsList = defineModel()
+const checkedFoods = ref([])
+checkedFoodsList.value.checkedFoods = checkedFoods.value
+
+const handelFn = (item)=> {
+  item.check = !item.check
+  if(item.check) {
+    checkedFoods.value.push(item)
+  }else{
+    checkedFoods.value = checkedFoods.value.filter(i=> i.id !== item.id)
+  }
 }
 </script>
 
@@ -515,13 +538,13 @@ const handleEditCancel = () => {
       <span ml-2>基础饭团</span>
     </div>
     <div flex flex-wrap ml-4>
-      <a-card v-for="(item, index) in base_foods.ft_list" :key="index" hoverable  style="width: 280px; margin-right: 10px; margin-bottom: 20px;" :style="{ 'border-color': item.check ? '#EE7E63' : '#f0f0f0', background: item.check ? '#FFF4F2' : '#fcfcfc'}">
+      <a-card v-for="(item, index) in base_foods.ft_list" :key="index" hoverable  style="width: 280px; margin-right: 10px; margin-bottom: 20px;" :style="{ 'border-color': item.check && item.show_check ? '#EE7E63' : '#f0f0f0', background: item.check && item.show_check ? '#FFF4F2' : '#fcfcfc'}">
         <template #actions>
           <span @click="handleStatus('ft_list', item, index)">{{ item.status ? '下架' : '上架'}}</span>
           <span @click="handleEdit('ft_list', item, index)">编辑</span>
           <span @click="handleDelete('ft_list', item, index)">删除</span>
         </template>
-        <a-card-meta :title="item.name" :class="{disabled: item.status === 0, 'check-box': item.show_check}" @click="item.check = !item.check">
+        <a-card-meta :title="item.name" :class="{disabled: item.status === 0, 'check-box': item.show_check}" @click="handelFn(item)">
           <template #avatar>
             <a-avatar :src="item.image || 'https://os.alipayobjects.com/rmsportal/QBnOOoLaAfKPirc.png'" />
           </template>
@@ -531,10 +554,7 @@ const handleEditCancel = () => {
               <div>线上: <span text-gray-600>{{ item.online_price }}</span> 元</div>
             </div>
             <div>{{ item.description }}</div>
-            <div class="check-icon" v-if="item.show_check" :class="{check: item.check}">
-              <!-- <CheckOutlined style="font-size: 20px;" :style="{color: item.check ? '#389e0d' : '#fff'}" /> -->
-              <image class="" src="../assets/check.png"></image>
-            </div>
+            <img class="check-icon" src="../assets/checked.png" v-if="item.check && item.show_check"/>
           </template>
         </a-card-meta>
       </a-card>
@@ -544,13 +564,13 @@ const handleEditCancel = () => {
       <span ml-2>基础加料</span>
     </div>
     <div flex flex-wrap ml-4>
-      <a-card v-for="(item, index) in base_foods.xl_list" :key="index" hoverable  style="width: 280px; margin-right: 10px; margin-bottom: 20px;" :style="{ 'border-color': item.check ? '#EE7E63' : '#f0f0f0', background: item.check ? '#FFF4F2' : '#fcfcfc'}">
+      <a-card v-for="(item, index) in base_foods.xl_list" :key="index" hoverable  style="width: 280px; margin-right: 10px; margin-bottom: 20px;" :style="{ 'border-color': item.check && item.show_check ? '#EE7E63' : '#f0f0f0', background: item.check && item.show_check ? '#FFF4F2' : '#fcfcfc'}">
         <template #actions>
           <span @click="handleStatus('xl_list', item, index)">{{ item.status ? '下架' : '上架'}}</span>
           <span @click="handleEdit('xl_list', item, index)">编辑</span>
           <span @click="handleDelete('xl_list', item, index)">删除</span>
         </template>
-        <a-card-meta :title="item.name" :class="{disabled: item.status === 0, 'check-box': item.show_check}" @click="item.check = !item.check">
+        <a-card-meta :title="item.name" :class="{disabled: item.status === 0, 'check-box': item.show_check}" @click="handelFn(item)">
           <template #avatar>
             <a-avatar :src="item.image || 'https://os.alipayobjects.com/rmsportal/QBnOOoLaAfKPirc.png'" />
           </template>
@@ -560,10 +580,7 @@ const handleEditCancel = () => {
               <div>线上: <span text-gray-600>{{ item.online_price }}</span> 元</div>
             </div>
             <div>{{ item.description }}</div>
-            <div class="check-icon" v-if="item.show_check" :class="{check: item.check}">
-              <!-- <CheckOutlined style="font-size: 20px;" :style="{color: item.check ? '#389e0d' : '#fff'}" /> -->
-              <image class="" src="../assets/check.png"></image>
-            </div>
+            <img class="check-icon" src="../assets/checked.png" v-if="item.check && item.show_check"/>
           </template>
         </a-card-meta>
       </a-card>
@@ -573,13 +590,13 @@ const handleEditCancel = () => {
       <span ml-2>现磨豆浆</span>
     </div>
     <div flex flex-wrap ml-4>
-      <a-card v-for="(item, index) in base_foods.dj_list" :key="index" hoverable  style="width: 280px; margin-right: 10px; margin-bottom: 20px;" :style="{ 'border-color': item.check ? '#EE7E63' : '#f0f0f0', background: item.check ? '#FFF4F2' : '#fcfcfc'}">
+      <a-card v-for="(item, index) in base_foods.dj_list" :key="index" hoverable  style="width: 280px; margin-right: 10px; margin-bottom: 20px;" :style="{ 'border-color': item.check && item.show_check ? '#EE7E63' : '#f0f0f0', background: item.check && item.show_check ? '#FFF4F2' : '#fcfcfc'}">
         <template #actions>
           <span @click="handleStatus('dj_list', item, index)">{{ item.status ? '下架' : '上架'}}</span>
           <span @click="handleEdit('dj_list', item, index)">编辑</span>
           <span @click="handleDelete('dj_list', item, index)">删除</span>
         </template>
-        <a-card-meta :title="item.name" :class="{disabled: item.status === 0, 'check-box': item.show_check}" @click="item.check = !item.check">
+        <a-card-meta :title="item.name" :class="{disabled: item.status === 0, 'check-box': item.show_check}" @click="handelFn(item)">
           <template #avatar>
             <a-avatar :src="item.image || 'https://os.alipayobjects.com/rmsportal/QBnOOoLaAfKPirc.png'" />
           </template>
@@ -589,10 +606,7 @@ const handleEditCancel = () => {
               <div>线上: <span text-gray-600>{{ item.online_price }}</span> 元</div>
             </div>
             <div>{{ item.description }}</div>
-            <div class="check-icon" v-if="item.show_check" :class="{check: item.check}">
-              <!-- <CheckOutlined style="font-size: 20px;" :style="{color: item.check ? '#389e0d' : '#fff'}" /> -->
-              <image class="" src="../assets/check.png"></image>
-            </div>
+            <img class="check-icon" src="../assets/checked.png" v-if="item.check && item.show_check"/>
           </template>
         </a-card-meta>
       </a-card>
@@ -637,15 +651,7 @@ const handleEditCancel = () => {
     right: 0;
     width: 30px;
     height: 30px;
-    // background: #eee;
-    // border-radius: 0 8px 0 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
   }
-  // .check{
-  //   background: #b7eb8f;
-  // }
 }
 ::v-deep(.ant-card-body) {
   padding: 0;
