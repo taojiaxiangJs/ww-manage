@@ -1,8 +1,9 @@
 <script setup>
-import { reactive, ref } from 'vue'
+import { reactive, ref, onMounted } from 'vue'
 import { message } from 'ant-design-vue'
 const [messageApi, contextHolder] = message.useMessage()
 import { DeleteOutlined, QuestionCircleOutlined } from '@ant-design/icons-vue'
+import storage from '../utils/storage.js'
 
 const activeKey = ref('mt')
 const activity = reactive({
@@ -177,6 +178,19 @@ const addMaxout = (item) => {
 const delMaxout = (item, index) => {
   item.value.splice(index, 1)
 }
+
+const save = () => {
+  storage.setItem('activity', activity)
+  message.success('本地保存成功')
+}
+
+onMounted(() => {
+  let storage_activity = storage.getItem('activity')
+  if(storage_activity) {
+    activity.mt = storage_activity.mt
+    activity.ele = storage_activity.ele
+  }
+})
 </script>
 
 <template>
@@ -252,6 +266,9 @@ const delMaxout = (item, index) => {
         </div>
       </a-flex>
     </a-tab-pane>
+    <template #rightExtra>
+      <a-button @click="save">保存</a-button>
+    </template>
   </a-tabs>
 </template>
 

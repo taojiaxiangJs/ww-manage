@@ -7,19 +7,22 @@ import { accAdd, accSub, accMul, accDiv } from '@/utils/utils'
 const activeKey = ref(['1', '2'])
 
 const openDrawer = ref(false);
+const drawerHeight = ref(900)
 const showDrawer = () => {
+  drawerHeight.value = window.innerHeight - 100 > 900 ? 900 : window.innerHeight - 100
   openDrawer.value = true;
 };
 const onClose = () => {
   openDrawer.value = false;
 }
+const renderFoodsList= ref([])
 const onCheckFoods = () => {
-  console.log('checkedFoodsList.value', checkedFoodsList.value.checkedFoods);
+  renderFoodsList.value = checkedFoodsList.value.checkedFoods
   let total_online = 0
   let total_offline = 0
   checkedFoodsList.value.checkedFoods.forEach((e) => {
-    total_online = accAdd(total, e.online_price)
-    total_offline = accAdd(total, e.offline_price)
+    total_online = accAdd(total_online, e.online_price)
+    total_offline = accAdd(total_offline, e.offline_price)
   })
   openDrawer.value = false;
   amount.value = total_online
@@ -215,24 +218,18 @@ const logFn = () => {
   <div mb-4>
     <a-button type="primary" size="small" @click="showDrawer()">选择商品</a-button>
   </div>
-  <template v-if="checkedFoodsList?.checkedFoods?.length">
-    <div p-4 mt-4>
+  <template v-if="renderFoodsList?.length">
+    <div p-4 my-4>
       <a-space wrap>
-        <a-card v-for="(item, index) in checkedFoodsList.checkedFoods" :key="index" hoverable  style="width: 280px; margin-right: 10px; margin-bottom: 20px;">
-          <a-card-meta :title="item.name">
-            <template #avatar>
-              <a-avatar :src="item.image || 'https://os.alipayobjects.com/rmsportal/QBnOOoLaAfKPirc.png'" />
-            </template>
-            <template #description>
-              <div flex justify-between>
-                <div>线下: <span text-gray-600>{{ item.offline_price }}</span> 元</div>
-                <div>线上: <span text-gray-600>{{ item.online_price }}</span> 元</div>
-              </div>
-            </template>
-          </a-card-meta>
-        </a-card>
+        <div v-for="(item, index) in renderFoodsList" :key="index" p-4 rounded-lg border border-solid border-gray-200 flex>
+          <img :src="item.image || 'https://os.alipayobjects.com/rmsportal/QBnOOoLaAfKPirc.png'" style="width: 70px;height: 70px" rounded-lg/>
+          <div ml-4 min-w-32>
+            <div font-semibold text-gray-600>{{ item.name }}</div>
+            <div text-gray-500 pt-2>线下: <span text-gray-500 px-1 font-semibold text-red-400>{{ item.offline_price }}</span> 元</div>
+            <div text-gray-500 pt-2>线上: <span text-gray-500 px-1 font-semibold text-red-400>{{ item.online_price }}</span> 元</div>
+          </div>
+        </div>
       </a-space>
-      
     </div>
     <a-space wrap>
       <a-button type="primary" size="small" @click="logFn()">打印</a-button>
@@ -241,26 +238,26 @@ const logFn = () => {
     </a-space>
     <div p-4>
       <div flex pb-8>
-        <div>
-          商品小计：<span text-red-500 font-semibold px-2>{{ amount }}</span
-          >元
-        </div>
+        <div>商品小计（线上）：<span text-red-500 font-semibold px-2>{{ amount }}</span>元</div>
+        <div ml-16>商品小计（线下）：<span text-red-500 font-semibold px-2>{{ amount_offline }}</span>元</div>
         <div ml-16 v-if="subsidyList.length">
-          商家活动补贴：新顾客<span text-red-500 font-semibold px-2>{{ subsidyList[0] }}</span
-          >元、老顾客<span text-red-500 font-semibold px-2>{{ subsidyList[1] }}</span
-          >元
+          商家活动补贴：新顾客<span text-red-500 font-semibold px-2>{{ subsidyList[0] }}</span>元、老顾客<span text-red-500 font-semibold px-2>{{ subsidyList[1] }}</span>元
         </div>
         <div ml-16 v-if="discountsList.length">
-          商品优惠后金额：新顾客<span text-red-500 font-semibold px-2>{{ discountsList[0] }}</span
-          >元、老顾客<span text-red-500 font-semibold px-2>{{ discountsList[1] }}</span
-          >元
+          商品优惠后金额：新顾客<span text-red-500 font-semibold px-2>{{ discountsList[0] }}</span>元、老顾客<span text-red-500 font-semibold px-2>{{ discountsList[1] }}</span>元
         </div>
       </div>
       <div>试算结果：</div>
       <div v-for="(item, index) in randerDiscountsList" :key="index" mt-6 border border-solid border-gray-400>
         <div v-for="(list, k) in item" :key="k" flex>
           <div w-60 p-2 border border-solid border-gray-400 text-center>{{ k }}</div>
-          <div v-for="(e, j) in list" :key="j" flex-1 text-center p-2 border border-solid border-gray-400>{{ e.value }}</div>
+          <div v-for="(e, j) in list" :key="j" flex-1 text-center p-2 border border-solid border-gray-400>
+            <template v-if="e.name === '预计收入'">
+              <text text-green-500 font-semibold v-if="e.value > amount_offline">{{ e.value }}</text>
+              <text text-red-500 font-semibold v-else>{{ e.value }}</text>
+            </template>
+            <text v-else>{{ e.value }}</text>
+          </div>
         </div>
       </div>
     </div>
@@ -275,7 +272,7 @@ const logFn = () => {
       <deliveryComponent v-model="deliveryData"></deliveryComponent>
     </a-collapse-panel>
   </a-collapse>
-  <a-drawer :height="1000" title="基础商品" placement="bottom" :open="openDrawer" @close="onClose">
+  <a-drawer :height="drawerHeight" title="基础商品" placement="bottom" :open="openDrawer" @close="onClose">
     <template #extra>
       <a-button style="margin-right: 8px" @click="onClose">取消</a-button>
       <a-button type="primary" @click="onCheckFoods">确定</a-button>

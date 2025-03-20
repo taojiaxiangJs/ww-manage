@@ -1,8 +1,9 @@
 <script setup>
-import { ref, h, watch, reactive } from 'vue';
+import { ref, h, watch, reactive, onMounted } from 'vue';
 import dayjs from 'dayjs';
 import { message, Modal } from 'ant-design-vue';
 import { ExclamationCircleOutlined, PlusCircleOutlined, DeleteOutlined, FormOutlined } from '@ant-design/icons-vue'
+import storage from '../utils/storage.js'
 const [modal, contextHolder] = Modal.useModal();
 
 
@@ -340,6 +341,19 @@ const delPartTime = (index) => {
   });
 }
 
+const save = () => {
+  storage.setItem('delivery', delivery)
+  message.success('本地保存成功')
+}
+
+onMounted(() => {
+  let storage_delivery = storage.getItem('delivery')
+  if(storage_delivery) {
+    delivery.mt = storage_delivery.mt
+    delivery.ele = storage_delivery.ele
+  }
+})
+
 // 监听距离段
 watch(
   () => editDistanceRangeData.range, 
@@ -498,6 +512,9 @@ watch(
           </div>
         </a-flex>
       </a-tab-pane>
+      <template #rightExtra>
+        <a-button @click="save">保存</a-button>
+      </template>
     </a-tabs>
   </div>
   <a-modal v-model:open="editDistanceRangeOpen" title="编辑时段和距离" @ok="handleEditDistanceRangeOk" cancelText="取消" okText="确定" width="660px">

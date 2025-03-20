@@ -2,6 +2,7 @@
 import { ref, reactive, h, onMounted  } from 'vue'
 import { ExclamationCircleOutlined } from '@ant-design/icons-vue'
 import { message, Modal } from 'ant-design-vue';
+import storage from '../utils/storage.js'
 const [modal, contextHolder] = Modal.useModal();
 
 const base_foods = reactive({
@@ -408,6 +409,7 @@ const handleStatus = (type, item, index) => {
             }
           })
         }
+        storage.setItem('base_foods', base_foods)
       },
       onCancel() {},
       class: 'test',
@@ -421,6 +423,7 @@ const handleStatus = (type, item, index) => {
       content: h('div', {style: 'font-size: 20px;padding: 10px 0;'}, `确定上架该商品么?`),
       onOk() {
         base_foods[type][index].status = 1
+        storage.setItem('base_foods', base_foods)
       },
       onCancel() {},
       class: 'test',
@@ -448,6 +451,7 @@ const handleDelete = (type, item, index) => {
       content: h('div', {style: 'font-size: 20px;padding: 10px 0;'}, `确定删除该该商品?`),
       onOk() {
         base_foods[type].splice(index, 1)
+        storage.setItem('base_foods', base_foods)
       },
       onCancel() {},
       class: 'test',
@@ -499,6 +503,7 @@ const handleEditOk = () => {
       editData.data.offline_price = formState.offline_price
       editData.data.description = formState.description
       base_foods[editData.type][editData.index] = editData.data
+      storage.setItem('base_foods', base_foods)
       handleEditCancel()
     })
 }
@@ -509,6 +514,13 @@ const handleEditCancel = () => {
 
 const props = defineProps(['isCheck'])
 onMounted(() => {
+  let storage_base_foods = storage.getItem('base_foods')
+  if(storage_base_foods) {
+    const { ft_list, xl_list, dj_list } = storage_base_foods
+    base_foods.ft_list = ft_list
+    base_foods.xl_list = xl_list
+    base_foods.dj_list = dj_list
+  }
   if(typeof props.isCheck !== 'undefined') {
     for(let key in base_foods) {
       base_foods[key].forEach(item => {
@@ -517,16 +529,17 @@ onMounted(() => {
     }
   }
 })
+
 const checkedFoodsList = defineModel()
-const checkedFoods = ref([])
-checkedFoodsList.value.checkedFoods = checkedFoods.value
+checkedFoodsList.value.checkedFoods = []
 
 const handelFn = (item)=> {
   item.check = !item.check
   if(item.check) {
-    checkedFoods.value.push(item)
+    checkedFoodsList.value.checkedFoods.push(item)
   }else{
-    checkedFoods.value = checkedFoods.value.filter(i=> i.id !== item.id)
+    const index = checkedFoodsList.value.checkedFoods.findIndex(i=> i.id === item.id)
+    checkedFoodsList.value.checkedFoods.splice(index, 1)
   }
 }
 </script>
