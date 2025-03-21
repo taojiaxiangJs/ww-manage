@@ -112,35 +112,26 @@ const count = (type) => {
       col.children = []
       timesList.forEach((t) => {
         let obj_t = {
+          type: 'time',
           name: '时段',
           value: `${t.min} - ${t.max}`,
           rule: t,
           children: [],
         }
         if (distanceList.length) {
-          // distanceList.forEach((d) => {
-          //   let obj_d = {
-          //     name: '距离（KM）',
-          //     value: `${d.min} - ${d.max ? d.max : '∞'}`,
-          //     rule: d,
-          //     children: [
-          //       {
-          //         name: '预计收入',
-          //         value: getPrice(e, brokerage_sub, t, d, type),
-          //       },
-          //     ],
-          //   }
-          //   obj_t.children.push(obj_d)
-          // })
-          ;[1, 2, 3, 4, 5, 6, 7].forEach((d) => {
+          [1, 2, 3, 4, 5, 6, 7].forEach((d) => {
             let distance_sub = getDistanceSub(d, distanceList)
             let obj_d = {
+              type: 'distance',
               name: '距离（KM）',
               value: d,
               rule: d,
               children: [
                 {
                   name: '预计收入',
+                  type: 'earning',
+                  distance: d,
+                  valid_delivery: validDelivery(type, d, t.min, t.max),
                   value: getPrice(e, brokerage_sub, t, distance_sub),
                 },
               ],
@@ -154,7 +145,7 @@ const count = (type) => {
     countResult.value.push(col)
   })
   randerDiscountsList.value = formatResult(countResult.value)
-  console.log(randerDiscountsList.value)
+  console.log('randerDiscountsList', randerDiscountsList.value, countResult.value)
 }
 
 const getDistanceSub = (d, distanceList) => {
@@ -165,6 +156,35 @@ const getDistanceSub = (d, distanceList) => {
     }
   })
   return sum
+}
+
+const validDelivery = (type, curDistance, curTimeMin, curTimeMax) => {
+  let timepart = deliveryData?.delivery[type].timepart || []
+  let range = deliveryData?.delivery[type].range || []
+  console.log(timepart, range, curDistance, curTimeMin, curTimeMax);
+  let filterRule = []
+  timepart.forEach(e=> {
+    if(e.time[0] >= curTimeMin && e.time[1] >= curTimeMax) {
+      filterRule.concat(e.range)
+    }
+  })
+  let filterThreshold = []
+  filterRule.forEach(e=> {
+    if(e.min <= curDistance && curDistance < e.max) {
+      filterThreshold.push(e.fee)
+    }
+  })
+  for(let k in range){
+    let times = range[k].time
+    if(times.length){
+      times.forEach(e=> {
+        if(e.min_time <= curTimeMin && e.max_time >= curTimeMin) {
+          filterThreshold.push(range[k].value)
+        }
+      })
+    }
+  }
+  return filterThreshold.some(e=> e <= amount.value)
 }
 
 const getPrice = (money, brokerage_sub, time, distance_sub) => {
@@ -178,7 +198,7 @@ const formatResult = (result) => {
   let arr = []
   const deep = (list, index) => {
     list.forEach((e) => {
-      let obj = { value: e.value, name: e.name }
+      let obj = { ...e }
       if (!arr[index] || !arr[index][e.name]) {
         if (!arr[index]) {
           arr[index] = {}
@@ -197,9 +217,9 @@ const formatResult = (result) => {
       if (!arr[index]) {
         arr[index] = {}
       }
-      arr[index][e.name] = [{ value: e.value, name: e.name }]
+      arr[index][e.name] = [{ ...e }]
     } else {
-      arr[index][e.name].push({ value: e.value, name: e.name })
+      arr[index][e.name].push({ ...e })
     }
     if (e.children && e.children.length) {
       deep(e.children, index)
@@ -237,13 +257,16 @@ const logFn = () => {
       <a-button type="primary" size="small" @click="count('ele')">饿了么试算</a-button>
     </a-space>
     <div p-4>
-      <div flex pb-8>
-        <div>商品小计（线上）：<span text-red-500 font-semibold px-2>{{ amount }}</span>元</div>
-        <div ml-16>商品小计（线下）：<span text-red-500 font-semibold px-2>{{ amount_offline }}</span>元</div>
-        <div ml-16 v-if="subsidyList.length">
-          商家活动补贴：新顾客<span text-red-500 font-semibold px-2>{{ subsidyList[0] }}</span>元、老顾客<span text-red-500 font-semibold px-2>{{ subsidyList[1] }}</span>元
+      <div pb-8>
+        <div flex>
+          <div>商品小计（线上）：<span text-red-500 font-semibold px-2>{{ amount }}</span>元</div>
+          <div ml-16>商品小计（线下）：<span text-red-500 font-semibold px-2>{{ amount_offline }}</span>元</div>
         </div>
-        <div ml-16 v-if="discountsList.length">
+        
+        <div mt-2 v-if="subsidyList.length">
+          商家活动补贴：新顾客<span text-green-500 font-semibold px-2>{{ subsidyList[0] }}</span>元、老顾客<span text-green-500 font-semibold px-2>{{ subsidyList[1] }}</span>元
+        </div>
+        <div mt-2 v-if="discountsList.length">
           商品优惠后金额：新顾客<span text-red-500 font-semibold px-2>{{ discountsList[0] }}</span>元、老顾客<span text-red-500 font-semibold px-2>{{ discountsList[1] }}</span>元
         </div>
       </div>
@@ -252,7 +275,7 @@ const logFn = () => {
         <div v-for="(list, k) in item" :key="k" flex>
           <div w-60 p-2 border border-solid border-gray-400 text-center>{{ k }}</div>
           <div v-for="(e, j) in list" :key="j" flex-1 text-center p-2 border border-solid border-gray-400>
-            <template v-if="e.name === '预计收入'">
+            <template v-if="e.type === 'earning'">
               <text text-green-500 font-semibold v-if="e.value > amount_offline">{{ e.value }}</text>
               <text text-red-500 font-semibold v-else>{{ e.value }}</text>
             </template>

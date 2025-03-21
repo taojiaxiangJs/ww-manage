@@ -12,9 +12,32 @@ const activeKey = ref('mt');
 const delivery = reactive({
   mt: {
     range: {
-      normal: 20, // 正常时段
-      night: 20,  // 夜宵时段
-      unbalance: 20  // 供需失衡
+      normal: {// 正常时段
+        value: 20,
+        time: [
+          {
+            min_time: '00:00',
+            max_time: '24:00'
+          }
+        ]
+      },
+      night: {  // 夜宵时段
+        value: 20,
+        time: [
+          {
+            min_time: '00:00',
+            max_time: '06:00'
+          },
+          {
+            min_time: '21:00',
+            max_time: '24:00'
+          }
+        ]
+      },
+      unbalance: {  // 供需失衡
+        value: 20,
+        time: []
+      } 
     },
     timepart: [{
       time: ['00:00', '23:59'],
@@ -131,9 +154,32 @@ const delivery = reactive({
   },
   ele: {
     range: {
-      normal: 20, // 正常时段
-      night: 20,  // 夜宵时段
-      unbalance: 20  // 供需失衡
+      normal: {// 正常时段
+        value: 20,
+        time: [
+          {
+            min_time: '00:00',
+            max_time: '24:00'
+          }
+        ]
+      },
+      night: {  // 夜宵时段
+        value: 20,
+        time: [
+          {
+            min_time: '00:00',
+            max_time: '06:00'
+          },
+          {
+            min_time: '21:00',
+            max_time: '24:00'
+          }
+        ]
+      },
+      unbalance: {  // 供需失衡
+        value: 20,
+        time: []
+      } 
     },
     timepart: [{
       time: ['00:00', '14:20'],
@@ -388,19 +434,19 @@ watch(
               <div pt-3 pb-2><span style="width: 4px;height: 10px;" inline-block bg-cyan-500 text-white rounded-sm mt-1.5 mr-1></span>正常时段（00:00 - 24:00）</div>
               <div pl-1>
                 <span px-2>快送（42.24平方公里）</span>
-                <a-input-number v-model:value="delivery.mt.range.normal" :min="1" :max="100" size="small" />元
+                <a-input-number v-model:value="delivery.mt.range.normal.value" :min="0" :max="100" size="small" />元
                 <span px-2>起送</span>
               </div>
               <div pt-3 pb-2><span style="width: 4px;height: 10px;" inline-block bg-cyan-500 text-white rounded-sm mt-1.5 mr-1></span>夜宵时段（21:00 - 次日06:00）</div>
               <div pl-1>
                 <span px-2>快送（57.06平方公里）</span>
-                <a-input-number v-model:value="delivery.mt.range.night" :min="1" :max="100" size="small" />元
+                <a-input-number v-model:value="delivery.mt.range.night.value" :min="0" :max="100" size="small" />元
                 <span px-2>起送</span>
               </div>
               <div pt-3 pb-2><span style="width: 4px;height: 10px;" inline-block bg-cyan-500 text-white rounded-sm mt-1.5 mr-1></span>供需失衡（临时范围和价格）</div>
               <div pl-1>
                 <span px-2>快送（7.54平方公里）</span>
-                <a-input-number v-model:value="delivery.mt.range.unbalance" :min="1" :max="100" size="small" />元
+                <a-input-number v-model:value="delivery.mt.range.unbalance.value" :min="0" :max="100" size="small" />元
                 <span px-2>起送</span>
               </div>
             </div>
@@ -459,19 +505,19 @@ watch(
               <div pt-3 pb-2><span style="width: 4px;height: 10px;" inline-block bg-cyan-500 text-white rounded-sm mt-1.5 mr-1></span>正常时段（00:00 - 24:00）</div>
               <div pl-1>
                 <span px-2>快送（42.24平方公里）</span>
-                <a-input-number v-model:value="delivery.ele.range.normal" :min="1" :max="100" size="small" />元
+                <a-input-number v-model:value="delivery.ele.range.normal.value" :min="0" :max="100" size="small" />元
                 <span px-2>起送</span>
               </div>
               <div pt-3 pb-2><span style="width: 4px;height: 10px;" inline-block bg-cyan-500 text-white rounded-sm mt-1.5 mr-1></span>夜宵时段（21:00 - 次日06:00）</div>
               <div pl-1>
                 <span px-2>快送（57.06平方公里）</span>
-                <a-input-number v-model:value="delivery.ele.range.night" :min="1" :max="100" size="small" />元
+                <a-input-number v-model:value="delivery.ele.range.night.value" :min="0" :max="100" size="small" />元
                 <span px-2>起送</span>
               </div>
               <div pt-3 pb-2><span style="width: 4px;height: 10px;" inline-block bg-cyan-500 text-white rounded-sm mt-1.5 mr-1></span>供需失衡（临时范围和价格）</div>
               <div pl-1>
                 <span px-2>快送（7.54平方公里）</span>
-                <a-input-number v-model:value="delivery.ele.range.unbalance" :min="1" :max="100" size="small" />元
+                <a-input-number v-model:value="delivery.ele.range.unbalance.value" :min="0" :max="100" size="small" />元
                 <span px-2>起送</span>
               </div>
             </div>
