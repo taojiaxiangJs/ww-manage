@@ -119,35 +119,38 @@ const delivery = reactive({
       time: {
         name: '时段收费',
         rule: [
+          // {
+          //   minFee: 0,
+          //   baseFee: 0,
+          //   min: '00:00',
+          //   rate: 0.8,
+          //   size: 1,
+          //   max: '02:00'
+          // },
           {
-            minFee: 0,
-            baseFee: 0,
-            min: '00:00',
-            rate: 0.8,
-            size: 1,
-            max: '02:00'
-          },{
             minFee: 0,
             baseFee: 0,
             min: '02:00',
             rate: 1,
             size: 1,
             max: '06:00'
-          },{
+          },
+          {
             minFee: 0,
             baseFee: 0,
             min: '06:00',
             rate: 0,
             size: 1,
             max: '21:00'
-          },{
-            minFee: 0,
-            baseFee: 0,
-            min: '21:00',
-            rate: 0.3,
-            size: 1,
-            max: '24:00'
-          }
+          },
+          // {
+          //   minFee: 0,
+          //   baseFee: 0,
+          //   min: '21:00',
+          //   rate: 0.3,
+          //   size: 1,
+          //   max: '24:00'
+          // }
         ]
       }
     }

@@ -161,7 +161,6 @@ const getDistanceSub = (d, distanceList) => {
 const validDelivery = (type, curDistance, curTimeMin, curTimeMax) => {
   let timepart = deliveryData?.delivery[type].timepart || []
   let range = deliveryData?.delivery[type].range || []
-  console.log(timepart, range, curDistance, curTimeMin, curTimeMax);
   let filterRule = []
   timepart.forEach(e=> {
     if(e.time[0] >= curTimeMin && e.time[1] >= curTimeMax) {
