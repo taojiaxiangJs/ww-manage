@@ -1,4 +1,4 @@
-import { defineConfig, presetAttributify, presetUno } from 'unocss'
+import { defineConfig, presetAttributify, presetUno, presetIcons } from 'unocss'
 
 export default defineConfig({
   content: {
@@ -9,8 +9,19 @@ export default defineConfig({
   presets: [
     presetAttributify({ /* preset options */}),
     presetUno(),
-    // ...custom presets
+    // presetIcons({
+    //   collections: {
+    //     'custom': () => import('@iconify-json/mdi').then(i => i.icons),
+    //     // 'ant-design': () => import('@iconify-json/ant-design').then(i => i.icons)
+    //   }
+    // })
   ],
+  theme: {
+    colors: {
+      primary: '#1890ff', // 可直接使用 $primary-color 的值
+      background: '#f0f2f5'
+    }
+  },
   rules: [
     // ...custom rules
   ],

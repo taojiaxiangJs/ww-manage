@@ -3,7 +3,7 @@ import { ref, h, watch, reactive, onMounted } from 'vue';
 import dayjs from 'dayjs';
 import { message, Modal } from 'ant-design-vue';
 import { ExclamationCircleOutlined, PlusCircleOutlined, DeleteOutlined, FormOutlined } from '@ant-design/icons-vue'
-import storage from '../utils/storage.js'
+import storage from '@/utils/storage.js'
 const [modal, contextHolder] = Modal.useModal();
 
 

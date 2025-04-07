@@ -2,7 +2,7 @@
 import { ref, reactive, h, onMounted  } from 'vue'
 import { ExclamationCircleOutlined } from '@ant-design/icons-vue'
 import { message, Modal } from 'ant-design-vue';
-import storage from '../utils/storage.js'
+import storage from '@/utils/storage.js'
 const [modal, contextHolder] = Modal.useModal();
 
 const base_foods = reactive({

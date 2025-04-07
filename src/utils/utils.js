@@ -1,3 +1,33 @@
+// 防抖
+export const debounce = (fn, delay) => {
+  let timer
+  return (...args) => {
+    clearTimeout(timer)
+    timer = setTimeout(() => fn.apply(this, args), delay)
+  }
+}
+
+// 格式化时间
+export const formatDate = (date, fmt = 'yyyy-MM-dd hh:mm:ss') => {
+  const d = new Date(date)
+  const o = {
+    'M+': d.getMonth() + 1,
+    'd+': d.getDate(),
+    'h+': d.getHours(),
+    'm+': d.getMinutes(),
+    's+': d.getSeconds()
+  }
+  if (/(y+)/.test(fmt)) {
+    fmt = fmt.replace(RegExp.$1, (d.getFullYear() + '').substr(4 - RegExp.$1.length))
+  }
+  for (const k in o) {
+    if (new RegExp(`(${k})`).test(fmt)) {
+      fmt = fmt.replace(RegExp.$1, (RegExp.$1.length === 1) ? o[k] : ('00' + o[k]).substr(('' + o[k]).length))
+    }
+  }
+  return fmt
+}
+  
   /**
    * 加法
    * @param arg1

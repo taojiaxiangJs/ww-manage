@@ -3,7 +3,7 @@ import { reactive, ref, onMounted } from 'vue'
 import { message } from 'ant-design-vue'
 const [messageApi, contextHolder] = message.useMessage()
 import { DeleteOutlined, QuestionCircleOutlined } from '@ant-design/icons-vue'
-import storage from '../utils/storage.js'
+import storage from '@/utils/storage.js'
 
 const activeKey = ref('mt')
 const activity = reactive({
@@ -21,11 +21,25 @@ const activity = reactive({
       name: '满减',
       value_type: 1,
       use_type: 0,
+      value: [
+        {
+          reach: '20',
+          reduced: '3',
+        },
+        {
+          reach: '30',
+          reduced: '4',
+        },
+        {
+          reach: '40',
+          reduced: '6',
+        },
+      ]
     },
     {
       key: 'delivery',
       name: '配送费立减',
-      value_type: 0,
+      value_type: 1,
       use_type: 0,
     },
     {
