@@ -3,6 +3,8 @@ import UnoCSS from 'unocss/vite'
 import vue from '@vitejs/plugin-vue'
 import { createStyleImportPlugin, ElementPlusResolve } from 'vite-plugin-style-import'
 import path from 'path'
+console.log(process.env.NODE_ENV);
+// development  production
 
 // https://vite.dev/config/
 export default defineConfig({
