@@ -1,0 +1,26 @@
+html {
+  /* font-size: 4px; 方便unocss计算：1单位 = 0.25rem = 1px  */
+  font-size: 16px;
+}
+
+body {
+  font-size: 16px;
+}
+
+@font-face {
+  font-family: qiji;
+  src: url("./assets/fonts/qiji.ttf");
+
+  font-family: 'HYk2gj';
+  src: url('fonts/HYk2gj.eot'); /* IE9 Compat Modes */
+  src: url('fonts/HYk2gj.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
+       url('fonts/HYk2gj.woff2') format('woff2'), /* Super Modern Browsers */
+       url('fonts/HYk2gj.woff') format('woff'), /* Pretty Modern Browsers */
+       url('onts/HYk2gj.ttf')  format('truetype'), /* Safari, Android, iOS */
+       url('fonts/HYk2gj.svg#svgFontName') format('svg'); /* Legacy iOS */
+}
+
+
+.font-qiji {
+  font-family: qiji;
+}

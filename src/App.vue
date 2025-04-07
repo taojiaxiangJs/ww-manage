@@ -1,19 +1,20 @@
 <template>
-  {{ $route.path === '/takeout' }}
   <div class="app-container">
     <!-- 登录或注册页面不使用布局 -->
-    <router-view v-if="$route.path === '/takeout' || $route.path === '/login' || $route.path === '/register'" />
+    <router-view v-if="whiteList.includes($route.path)" />
     <!-- 管理后台使用 Layout -->
-    <!-- <layout v-else /> -->
+    <layout v-else />
   </div>
 </template>
 
 <script setup>
 import Layout from '@/layout/Layout.vue'
+const whiteList = ['/','/takeout', '/login', '/register']
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
+@use './assets/styles/style.scss';
 .app-container {
-  // height: 100vh;
+  height: 100vh;
 }
 </style>
