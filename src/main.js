@@ -4,7 +4,6 @@ import router from './router'
 import pinia from './store'
 import Antd from 'ant-design-vue'
 import 'ant-design-vue/dist/reset.css'
-// import './assets/style/style.css'
 import 'uno.css'
 
 const app = createApp(App)

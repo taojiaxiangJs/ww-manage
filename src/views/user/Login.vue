@@ -1,8 +1,9 @@
 <template>
   <div h-full w-full class="bg-[#314a43]">
-    <div text-8xl text-white font-qiji>中国</div>
+    <div text-8xl text-white style="font-family: qiji;">字体</div>
+    <div text-8xl text-white font-custom-qiji>字体</div>
 
-    <div w-400px mx-auto bg-white p-8 rounded>
+    <!-- <div w-400px mx-auto bg-white p-8 rounded>
       <a-form :model="form" @finish="handleLogin">
         <a-form-item>
           <a-input v-model:value="form.username" placeholder="用户名" />
@@ -14,7 +15,7 @@
           <a-button type="primary" html-type="submit">登录</a-button>
         </a-form-item>
       </a-form>
-    </div>
+    </div> -->
   </div>
   
 </template>

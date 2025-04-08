@@ -8,19 +8,11 @@ body {
 }
 
 @font-face {
-  font-family: qiji;
+  font-family: 'qiji';
   src: url("./assets/fonts/qiji.ttf");
-
-  font-family: 'HYk2gj';
-  src: url('fonts/HYk2gj.eot'); /* IE9 Compat Modes */
-  src: url('fonts/HYk2gj.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
-       url('fonts/HYk2gj.woff2') format('woff2'), /* Super Modern Browsers */
-       url('fonts/HYk2gj.woff') format('woff'), /* Pretty Modern Browsers */
-       url('onts/HYk2gj.ttf')  format('truetype'), /* Safari, Android, iOS */
-       url('fonts/HYk2gj.svg#svgFontName') format('svg'); /* Legacy iOS */
 }
 
 
-.font-qiji {
+.font-custom-qiji {
   font-family: qiji;
 }
